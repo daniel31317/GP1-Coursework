@@ -1,0 +1,23 @@
+#include "GameWindow.h"
+
+void GameWindow::setWindow(int width, int height)
+{
+	m_width = width;
+	m_height = height;
+
+	SMALL_RECT windowSize = { 10, 10, width, height };
+	if (!SetConsoleWindowInfo(hConsole, TRUE, &windowSize))
+	{
+		std::cout << "SetConsoleWindowIngo failed with error" << GetLastError() << std::endl;
+	}
+	if (!SetConsoleTitle(L"TEST"))
+	{
+		std::cout << "Set ConsoleTitle failed with error" << GetLastError() << std::endl;
+	}
+
+	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE); // this code hides the cursor
+	CONSOLE_CURSOR_INFO cursorInfo;
+	GetConsoleCursorInfo(out, &cursorInfo);
+	cursorInfo.bVisible = false; // set the cursor visibility
+	SetConsoleCursorInfo(out, &cursorInfo);
+}
