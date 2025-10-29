@@ -28,13 +28,13 @@ public:
         return m_buffer[x][y];
     }
     
-    void setChar(char c, int x, int y)
+    void setChar(const char& c, const int x, const int y)
     {
         m_buffer[x][y] = c;
     }
     
     
-    void setChar(char c, Vector2 pos)
+    void setChar(const char& c, const Vector2 pos)
     {
         m_buffer[pos.x][pos.y] = c;
     }
@@ -45,7 +45,7 @@ public:
         m_buffer[pos.x][pos.y] = obj.getbody();
     }
 
-    void createBuffer(int cols, int rows)
+    void createBuffer(const int cols, const int rows)
     {
         m_buffer = new char* [row];
         for (int i = 0; i < row; ++i) {

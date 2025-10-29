@@ -13,7 +13,7 @@ GameSource::~GameSource()
 void GameSource::initialiseGame()
 {
 	m_gameWindow.setWindow(m_width, m_height);
-	player = Player(m_width / 2, m_height - 2, 'P');
+	player = Player(m_width / 2, m_height - 2, '^');
 	//we can just use one ground object for it and just loop it in draw and just set the x to 0 since it doesnt matter for the moment
 	ground = GameObject(0, m_height - 1, '_');
 	mainMenu = Menu();
@@ -24,11 +24,18 @@ void GameSource::initialiseGame()
 	{
 		aliens[i] = Alien(rand() % m_width, i, 'A');
 	}
-	
-	for (int i = 0; i < NUMBER_OF_BARRIERS; i++)
+
+	int x = 10;
+
+	for (int i = 0; i < NUMBER_OF_BARRIERS; ++i) 
 	{
-		barriers[i] = GameObject(m_width / NUMBER_OF_BARRIERS * i, m_height - 8, 'B');
+		if (i % 5 == 0 && i != 0)
+		{
+			x += 14;
+		}
+		barriers[i] = GameObject(i + x, m_height - 8, '=');
 	}
+
 	frontBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
 	backBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
 }
