@@ -17,9 +17,9 @@ class GameObject
 		void move(Vector2 move);
 		void setPosition(int x, int y);
 		void setPosition(Vector2 position);
-		Vector2 getPosition();
+		Vector2 getPosition() const;
 		void setBody(char);
-		char getbody();
+		char getbody() const;
 		void draw();
 };
 

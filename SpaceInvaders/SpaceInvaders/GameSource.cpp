@@ -2,7 +2,7 @@
 
 GameSource::GameSource()
 {
-
+	
 }
 GameSource::~GameSource()
 {
@@ -29,7 +29,8 @@ void GameSource::initialiseGame()
 	{
 		barriers[i] = GameObject(m_width / NUMBER_OF_BARRIERS * i, m_height - 8, 'B');
 	}
-
+	frontBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
+	backBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
 }
 
 
@@ -44,10 +45,38 @@ void GameSource::updateGame()
 
 }
 
+void GameSource::updateBuffer()
+{
+	backBuffer->setGameObjectAtPos(player);
+	for (int i = 0; i < NUMBER_OF_ALIENS; i++)
+	{
+		backBuffer->setGameObjectAtPos(aliens[i]);
+	}
+	for (int i = 0; i < NUMBER_OF_BARRIERS; i++)
+	{
+		backBuffer->setGameObjectAtPos(barriers[i]);
+	}
+}
+
+void GameSource::swapBuffers()
+{	
+	std::swap(frontBuffer, backBuffer);
+	backBuffer->clearBuffer();
+}
+
 
 void GameSource::drawGame()
 {
-	system("cls");
+	for (int y = 0; y < m_height; y++)
+	{
+		for (int x = 0; x < m_width; x++)
+		{
+			m_gameWindow.setCursorPosition(x, y);
+			std::cout << frontBuffer->getChar(x, y);
+		}
+	}
+
+	/*
 	//loop through the window "grid"
 	for (int y = 0; y < m_height; y++)
 	{
@@ -98,6 +127,7 @@ void GameSource::drawGame()
 		//go to next line
 		std::cout << "\n";
 	}
+	*/
 }
 
 
@@ -113,13 +143,15 @@ void GameSource::gameLoop()
 			case GAMERUNNING:
 				processInput();
 				updateGame();
+				updateBuffer();
+				swapBuffers();
 				drawGame();
 				break;
 			case QUITGAME:
 				m_runLoop = false;
 				break;
 			default: std::cout << "Unknown game state";
-				break;
+				break; 
 		}
 	}
 	

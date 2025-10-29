@@ -8,11 +8,9 @@ Menu::Menu()
 
 GameState Menu::RunMenu()
 {
-    
-
     system("cls");
     std::cout << "Start Screen:\n";
-    std::cout << "1. PLayer Space Invaders\n";
+    std::cout << "1. Player Space Invaders\n";
     std::cout << "2. Quit\n";
     std::cout << "Enter your choice: ";
     
@@ -38,7 +36,7 @@ GameState Menu::RunMenu()
                 std::cout << "Invalid Choice Please Choose 1 or 2:";
             }
         }
-        else //if the player enters a string ro char handle it
+        else //if the player enters a string or char handle it
         {
             std::cout << "Invalid Input Please Try Again: ";
             std::cin.clear();

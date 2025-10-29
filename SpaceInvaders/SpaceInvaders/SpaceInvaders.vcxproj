@@ -135,6 +135,7 @@
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Missile.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="ScreenBuffer.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <ItemGroup>

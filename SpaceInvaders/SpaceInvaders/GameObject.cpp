@@ -33,11 +33,11 @@ void GameObject::move(Vector2 move)
 }
 
 //Getters
-Vector2 GameObject::getPosition()
+Vector2 GameObject::getPosition() const
 {
 	return position;
 }
-char GameObject::getbody()
+char GameObject::getbody() const
 {
 	return body;
 }

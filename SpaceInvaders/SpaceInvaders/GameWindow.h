@@ -10,5 +10,6 @@ private:
 	int m_height = 0;
 public:
 	void setWindow(int width, int height);
+	void setCursorPosition(int x, int y);
 };
 
