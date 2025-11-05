@@ -13,13 +13,18 @@ class GameObject
 		GameObject();
 		GameObject(int xPos, int yPos, char body);
 		GameObject(Vector2 position, char body);
+
+		void draw();
+		virtual void update();
 		void move(int x, int y);
 		void move(Vector2 move);
-		void setPosition(int x, int y);
-		void setPosition(Vector2 position);
-		Vector2 getPosition() const;
-		void setBody(char);
-		char getbody() const;
-		void draw();
+
+		void setPosition(int x, int y) { position.x = x; position.y = y; }
+		void setPosition(Vector2 position) { this->position = position; }
+		Vector2 getPosition() const { return position; };
+
+		void setBody(char body) { this->body = body; }
+		char getBody() const { return body; }
+		
 };
 

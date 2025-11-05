@@ -31,7 +31,7 @@ private:
 	GameObject* barriers = new GameObject[NUMBER_OF_BARRIERS];
 
 	std::unique_ptr<ScreenBuffer> frontBuffer;
-	std::unique_ptr <ScreenBuffer> backBuffer;
+	std::unique_ptr<ScreenBuffer> backBuffer;
 
 public:
 	GameSource();

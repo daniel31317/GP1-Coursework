@@ -31,29 +31,9 @@ void GameObject::move(Vector2 move)
 {
 	position += move;
 }
+void GameObject::update()
+{
 
-//Getters
-Vector2 GameObject::getPosition() const
-{
-	return position;
-}
-char GameObject::getbody() const
-{
-	return body;
-}
-
-//Setters
-void GameObject::setPosition(int x, int y)
-{
-	position = Vector2(x, y);
-}
-void GameObject::setPosition(Vector2 pos)
-{
-	position = pos;
-}
-void GameObject::setBody(char body)
-{
-	this->body = body;
 }
 
 

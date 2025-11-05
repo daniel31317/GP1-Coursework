@@ -14,31 +14,31 @@ struct Vector2
 		this->y = y;
 	}
 
-	bool operator== (const Vector2& p)
+	bool operator== (const Vector2& other)
 	{
-		if (x == p.x && y == p.y)
+		if (x == other.x && y == other.y)
 		{
 			return true;
 		}
 		return false;
 	}
-
-	Vector2 operator+ (const Vector2& p)
+	
+	Vector2 operator+ (const Vector2& other)
 	{
-		return Vector2(x + p.x, y + p.y);
+		return Vector2(x + other.x, y + other.y);
 	}
 	
-	Vector2 operator+= (const Vector2& p)
+	Vector2 operator+= (const Vector2& other)
 	{
-		return Vector2(x + p.x, y + p.y);
+		return Vector2(x + other.x, y + other.y);
 	}
 	
-	Vector2 operator- (const Vector2& p)
+	Vector2 operator- (const Vector2& other)
 	{
-		return Vector2(x - p.x, y - p.y);
+		return Vector2(x - other.x, y - other.y);
 	}
-	Vector2 operator-= (const Vector2& p)
+	Vector2 operator-= (const Vector2& other)
 	{
-		return Vector2(x - p.x, y - p.y);
+		return Vector2(x - other.x, y - other.y);
 	}
 };
