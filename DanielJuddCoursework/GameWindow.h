@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <Windows.h>
+#include "Vector2.h"
 class GameWindow
 {
 private:
@@ -10,6 +11,7 @@ private:
 	int m_height = 0;
 public:
 	void setWindow(int width, int height);
-	void setCursorPosition(int x, int y);
+	void setCursorPosition(const int x, const int y);
+	void setCursorPosition(const Vector2 position);
 };
 

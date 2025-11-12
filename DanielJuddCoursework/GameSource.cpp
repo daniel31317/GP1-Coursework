@@ -23,11 +23,11 @@ void GameSource::initialiseGame()
 {
 	m_gameWindow.setWindow(m_width, m_height);
 
-	player = Player(m_width / 2, m_height - 2, '^', 10);
+	m_player = Player(m_width / 2, m_height - 2, '^', 10);
 
 	//reserve blocks of memory for the vectors
-	aliens.reserve(NUMBER_OF_ALIENS);
-	barriers.reserve(NUMBER_OF_ALIENS);
+	m_aliens.reserve(NUMBER_OF_ALIENS);
+	m_barriers.reserve(NUMBER_OF_ALIENS);
 
 	m_currentState = &GameSource::runMenu;
 
@@ -35,7 +35,7 @@ void GameSource::initialiseGame()
 
 	for (int i = 0; i < NUMBER_OF_ALIENS; i++)
 	{
-		aliens.emplace_back(Alien(rand() % m_width, i, 'A'));
+		m_aliens.emplace_back(Alien(rand() % m_width, i, 'A'));
 	}
 
 	int x = 10;
@@ -46,57 +46,61 @@ void GameSource::initialiseGame()
 		{
 			x += 14;
 		}
-		barriers.emplace_back(GameObject(i + x, m_height - 8, '='));
+		m_barriers.emplace_back(GameObject(i + x, m_height - 8, '='));
 	}
-	
 
+	m_frontBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
+	m_backBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
 
-	frontBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
-	backBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
+	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_width / 2, 7), "SpaceInvaders");
+	m_snakeBtn = std::make_unique<Button>(19, 5, Vector2(m_width / 2, 14), "Snake");
+	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_width / 2, 21), "Quit");
+
+	m_Border = std::make_unique<Button>(m_width, m_height, Vector2(m_width/2, m_height/2), "");
 }
 
 
 void GameSource::processInput()
 {
-	player.processInput();
+	m_player.processInput();
 }
 
 
 void GameSource::updateGame()
 {
-	player.update();
-	player.getMissile()->missileCollisionDetection(aliens, barriers);
+	m_player.update();
+	m_player.getMissile()->missileCollisionDetection(m_aliens, m_barriers);
 }
 
 void GameSource::updateBuffer()
 {
-	backBuffer->setGameObjectAtPos(player);
+	m_backBuffer->setGameObjectAtPos(m_player);
 
-	for (int i = 0; i < aliens.size(); i++)
+	for (int i = 0; i < m_aliens.size(); i++)
 	{
-		backBuffer->setGameObjectAtPos(aliens[i]);
+		m_backBuffer->setGameObjectAtPos(m_aliens[i]);
 	}
 
-	for (int i = 0; i < barriers.size(); i++)
+	for (int i = 0; i < m_barriers.size(); i++)
 	{
-		backBuffer->setGameObjectAtPos(barriers[i]);
+		m_backBuffer->setGameObjectAtPos(m_barriers[i]);
 	}
 
-	if (player.getMissile()->isMissileActive())
+	if (m_player.getMissile()->isMissileActive())
 	{
-		backBuffer->setGameObjectAtPos(*player.getMissile());
+		m_backBuffer->setGameObjectAtPos(*m_player.getMissile());
 	}
 
 	for (int i = 0; i < m_width; i++)
 	{
-		backBuffer->setChar('_', i, m_height - 1);
+		m_backBuffer->setChar('_', i, m_height - 1);
 	}
 }
 
 void GameSource::swapBuffers()
 {	
-	std::swap(frontBuffer, backBuffer);
-	backBuffer->clearBuffer();
+	std::swap(m_frontBuffer, m_backBuffer);
+	m_backBuffer->clearBuffer();
 }
 
 
@@ -107,7 +111,7 @@ void GameSource::drawGame()
 		for (int x = 0; x < m_width; x++)
 		{
 			m_gameWindow.setCursorPosition(x, y);
-			std::cout << frontBuffer->getChar(x, y);
+			std::cout << m_frontBuffer->getChar(x, y);
 		}
 	}
 }
@@ -115,17 +119,66 @@ void GameSource::drawGame()
 void GameSource::runMenu()
 {
 	system("cls");
-	std::cout << "Start Screen:\n";
-	std::cout << "1. Player Space Invaders\n";
-	std::cout << "2. Quit\n";
-	std::cout << "Enter your choice: ";
 
-	int choice;
+	
+	m_Border->drawButton(m_gameWindow);
+	m_spaceInvadersBtn->drawButton(m_gameWindow);
+	m_snakeBtn->drawButton(m_gameWindow);
+	m_quitBtn->drawButton(m_gameWindow);
+	
 
 	bool madeChoice = false;
 
-	while (!madeChoice)
+		//from https://stackoverflow.com/questions/73958407/c-get-users-cursor-position-in-console-cells 
+		//and https://learn.microsoft.com/en-us/windows/console/reading-input-buffer-events
+		//with some additional settings and modifications to get it working with what i needed it to do
+		
+	HANDLE out = GetStdHandle(STD_INPUT_HANDLE);
+	INPUT_RECORD ir;
+	DWORD dwRead;
+	DWORD oldConsole;
+
+	HandleSettingUpConsoleForMenu(out, oldConsole);
+
+	while (ReadConsoleInput(out, &ir, 1, &dwRead) && dwRead == 1 && !madeChoice)
 	{
+		//if it is a mouse event
+		if (ir.EventType == MOUSE_EVENT)
+		{
+			//ignore all mouse events which don't involve mouse button presses
+			if (ir.Event.MouseEvent.dwEventFlags != 0 && ir.Event.MouseEvent.dwEventFlags != DOUBLE_CLICK)
+				continue;
+
+			//if mouse was released
+			if (ir.Event.MouseEvent.dwButtonState == 0)
+			{
+				if (m_spaceInvadersBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				{
+					m_currentState = &GameSource::gameLoop;
+					madeChoice = true;
+				}
+				else if (m_snakeBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				{
+					m_currentState = &GameSource::gameLoop;
+					madeChoice = true;
+				}
+				else if (m_quitBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				{
+					m_currentState = &GameSource::quitGame;
+					madeChoice = true;
+				}
+			}
+			fflush(stdout);
+		}
+	}
+
+	//set console to what it was previously
+	SetConsoleMode(out, oldConsole);
+
+		
+
+
+		/*
 		if (std::cin >> choice)
 		{
 			if (choice == 1)
@@ -151,12 +204,40 @@ void GameSource::runMenu()
 			std::cin.clear();
 			std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 		}
+		*/
 
-	}
 }
 
 
+void GameSource::HandleSettingUpConsoleForMenu(HANDLE& out, DWORD& oldConsole)
+{
+	if (out == INVALID_HANDLE_VALUE) 
+	{
+		ErrorExit("GetStdHandle", out, oldConsole);
+	}
 
+	//save the original console mode
+	if (!GetConsoleMode(out, &oldConsole)) {
+		ErrorExit("GetConsoleMode", out, oldConsole);
+	}
+
+	//set console to report mouse events
+	if (!SetConsoleMode(out, ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT))
+	{
+		ErrorExit("SetConsoleMode", out, oldConsole);
+	}
+}
+
+VOID GameSource::ErrorExit(LPCSTR lpszMessage, HANDLE& out, DWORD& oldConsole)
+{
+	fprintf(stderr, "%s\n", lpszMessage);
+
+	// Restore input mode on exit.
+
+	SetConsoleMode(out, oldConsole);
+
+	ExitProcess(0);
+}
 
 
 void GameSource::gameLoop()
