@@ -1,5 +1,6 @@
 #pragma once
 #include <cstring>
+#include "Vector2.h"
 
 struct ScreenBuffer 
 {
@@ -19,6 +20,11 @@ struct ScreenBuffer
         ScreenBuffer(int x, int y) : row(x), col(y) 
         {
             createBuffer(x, y);
+        };
+
+        ScreenBuffer(Vector2 size) : row(size.x), col(size.y)
+        {
+            createBuffer(size.x, size.y);
         };
 
         ~ScreenBuffer() 

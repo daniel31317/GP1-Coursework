@@ -15,8 +15,11 @@ private:
 
 	bool m_runLoop = true;
 
-	const int m_width = 80;
-	const int m_height = 30;
+	const Vector2 m_windowSize = Vector2(82, 32);
+	const Vector2 m_gameSize = Vector2(80, 30);
+	const int m_gameDrawOffset = 1;
+
+
 	GameWindow m_gameWindow;
 
 	GameObject m_ground;

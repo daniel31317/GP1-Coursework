@@ -21,9 +21,9 @@ void GameSource::runGame()
 
 void GameSource::initialiseGame()
 {
-	m_gameWindow.setWindow(m_width, m_height);
+	m_gameWindow.setWindow(m_windowSize);
 
-	m_player = Player(m_width / 2, m_height - 2, '^', 10);
+	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 2, '^', 10);
 
 	//reserve blocks of memory for the vectors
 	m_aliens.reserve(NUMBER_OF_ALIENS);
@@ -35,7 +35,7 @@ void GameSource::initialiseGame()
 
 	for (int i = 0; i < NUMBER_OF_ALIENS; i++)
 	{
-		m_aliens.emplace_back(Alien(rand() % m_width, i, 'A'));
+		m_aliens.emplace_back(Alien(rand() % m_gameSize.x, i, 'A'));
 	}
 
 	int x = 10;
@@ -46,17 +46,17 @@ void GameSource::initialiseGame()
 		{
 			x += 14;
 		}
-		m_barriers.emplace_back(GameObject(i + x, m_height - 8, '='));
+		m_barriers.emplace_back(GameObject(i + x, m_gameSize.y - 8, '='));
 	}
 
-	m_frontBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
-	m_backBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
+	m_frontBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
+	m_backBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
 
-	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_width / 2, 7), "SpaceInvaders");
-	m_snakeBtn = std::make_unique<Button>(19, 5, Vector2(m_width / 2, 14), "Snake");
-	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_width / 2, 21), "Quit");
+	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "SpaceInvaders");
+	m_snakeBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Snake");
+	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 21), "Quit");
 
-	m_Border = std::make_unique<Button>(m_width, m_height, Vector2(m_width/2, m_height/2), "");
+	m_Border = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
 }
 
 
@@ -91,9 +91,9 @@ void GameSource::updateBuffer()
 		m_backBuffer->setGameObjectAtPos(*m_player.getMissile());
 	}
 
-	for (int i = 0; i < m_width; i++)
+	for (int i = 0; i < m_gameSize.x; i++)
 	{
-		m_backBuffer->setChar('_', i, m_height - 1);
+		m_backBuffer->setChar('_', i, m_gameSize.y - 1);
 	}
 }
 
@@ -106,11 +106,11 @@ void GameSource::swapBuffers()
 
 void GameSource::drawGame()
 {
-	for (int y = 0; y < m_height; y++)
+	for (int y = 0; y < m_gameSize.y; y++)
 	{
-		for (int x = 0; x < m_width; x++)
+		for (int x = 0; x < m_gameSize.x; x++)
 		{
-			m_gameWindow.setCursorPosition(x, y);
+			m_gameWindow.setCursorPosition(x + m_gameDrawOffset, y + m_gameDrawOffset);
 			std::cout << m_frontBuffer->getChar(x, y);
 		}
 	}
@@ -127,16 +127,16 @@ void GameSource::runMenu()
 	m_quitBtn->drawButton(m_gameWindow);
 	
 
-	bool madeChoice = false;
-
-		//from https://stackoverflow.com/questions/73958407/c-get-users-cursor-position-in-console-cells 
-		//and https://learn.microsoft.com/en-us/windows/console/reading-input-buffer-events
-		//with some additional settings and modifications to get it working with what i needed it to do
+	//from https://stackoverflow.com/questions/73958407/c-get-users-cursor-position-in-console-cells 
+	//and https://learn.microsoft.com/en-us/windows/console/reading-input-buffer-events
+	//with some additional settings and modifications to get it working with what i needed it to do
 		
 	HANDLE out = GetStdHandle(STD_INPUT_HANDLE);
 	INPUT_RECORD ir;
 	DWORD dwRead;
 	DWORD oldConsole;
+
+	bool madeChoice = false;
 
 	HandleSettingUpConsoleForMenu(out, oldConsole);
 
@@ -174,38 +174,6 @@ void GameSource::runMenu()
 
 	//set console to what it was previously
 	SetConsoleMode(out, oldConsole);
-
-		
-
-
-		/*
-		if (std::cin >> choice)
-		{
-			if (choice == 1)
-			{
-				system("cls");
-				m_currentState = &GameSource::gameLoop;
-				madeChoice = true;
-			}
-			else if (choice == 2)
-			{
-				system("cls");
-				m_currentState = &GameSource::quitGame;
-				madeChoice = true;
-			}
-			else
-			{
-				std::cout << "Invalid Choice Please Choose 1 or 2:";
-			}
-		}
-		else //if the player enters a string or char handle it
-		{
-			std::cout << "Invalid Input Please Try Again: ";
-			std::cin.clear();
-			std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
-		}
-		*/
-
 }
 
 
@@ -252,6 +220,7 @@ void GameSource::gameLoop()
 void GameSource::quitGame()
 {
 	m_runLoop = false;
+	system("cls");
 }
 
 
