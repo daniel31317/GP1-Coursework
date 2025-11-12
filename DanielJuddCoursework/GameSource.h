@@ -2,8 +2,6 @@
 #include "GameWindow.h"
 #include "Alien.h"
 #include "Player.h"
-#include "Menu.h"
-#include "GameState.h"
 #include "ScreenBuffer.h"
 #include <memory>
 #include <algorithm>
@@ -12,9 +10,6 @@
 class GameSource
 {
 private:
-
-	GameState gameState = STARTMENU;
-	Menu mainMenu;
 
 	bool m_runLoop = true;
 
@@ -33,16 +28,26 @@ private:
 	std::unique_ptr<ScreenBuffer> frontBuffer;
 	std::unique_ptr<ScreenBuffer> backBuffer;
 
+	//stores current state of the game as a function pointer
+	void (GameSource::*m_currentState)();
+
 public:
 	GameSource();
 	~GameSource();
 	void initialiseGame();
+	
+	void runGame();
+
+	void gameLoop();
 	void processInput();
 	void updateGame();
 	void updateBuffer();
 	void swapBuffers();
 	void drawGame();
-	void gameLoop();
+
+	void runMenu();
+
+	void quitGame();
 
 
 };

@@ -6,6 +6,6 @@ int main()
 {
 	GameSource game;
 	game.initialiseGame();
-	game.gameLoop();
+	game.runGame();
 	return 0;
 }

@@ -17,7 +17,8 @@ void GameSource::initialiseGame()
 	player = Player(m_width / 2, m_height - 2, '^', 10);
 	//we can just use one ground object for it and just loop it in draw and just set the x to 0 since it doesnt matter for the moment
 	ground = GameObject(0, m_height - 1, '_');
-	mainMenu = Menu();
+
+	m_currentState = &GameSource::runMenu;
 
 	srand((unsigned int)time(0));
 
@@ -95,31 +96,72 @@ void GameSource::drawGame()
 	}
 }
 
+void GameSource::runMenu()
+{
+	system("cls");
+	std::cout << "Start Screen:\n";
+	std::cout << "1. Player Space Invaders\n";
+	std::cout << "2. Quit\n";
+	std::cout << "Enter your choice: ";
+
+	int choice;
+
+	bool madeChoice = false;
+
+	while (!madeChoice)
+	{
+		if (std::cin >> choice)
+		{
+			if (choice == 1)
+			{
+				system("cls");
+				m_currentState = &GameSource::gameLoop;
+				madeChoice = true;
+			}
+			else if (choice == 2)
+			{
+				system("cls");
+				m_currentState = &GameSource::quitGame;
+				madeChoice = true;
+			}
+			else
+			{
+				std::cout << "Invalid Choice Please Choose 1 or 2:";
+			}
+		}
+		else //if the player enters a string or char handle it
+		{
+			std::cout << "Invalid Input Please Try Again: ";
+			std::cin.clear();
+			std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+		}
+
+	}
+}
+
+
+
+
 
 void GameSource::gameLoop()
 {
-	while (m_runLoop)
-	{
-		switch (gameState)
-		{
-			case STARTMENU:
-				gameState = mainMenu.RunMenu();
-				break;
-			case GAMERUNNING:
-				processInput();
-				updateGame();
-				updateBuffer();
-				swapBuffers();
-				drawGame();
-				break;
-			case QUITGAME:
-				m_runLoop = false;
-				break;
-			default: std::cout << "Unknown game state";
-				break; 
-		}
-	}
-	
+	processInput();
+	updateGame();
+	updateBuffer();
+	swapBuffers();
+	drawGame();
 }
 
+void GameSource::quitGame()
+{
+	m_runLoop = false;
+}
+
+void GameSource::runGame()
+{
+	while (m_runLoop)
+	{
+		(this->*m_currentState)();
+	}
+}
 
