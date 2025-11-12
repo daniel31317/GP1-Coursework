@@ -5,6 +5,7 @@
 #include "ScreenBuffer.h"
 #include <memory>
 #include <algorithm>
+#include <vector>
 
 
 class GameSource
@@ -22,8 +23,9 @@ private:
 
 	const int NUMBER_OF_ALIENS = 20;
 	const int NUMBER_OF_BARRIERS = 20;
-	Alien* aliens = new Alien[NUMBER_OF_ALIENS];
-	GameObject* barriers = new GameObject[NUMBER_OF_BARRIERS];
+
+	std::vector<Alien> aliens;
+	std::vector<GameObject> barriers;
 
 	std::unique_ptr<ScreenBuffer> frontBuffer;
 	std::unique_ptr<ScreenBuffer> backBuffer;

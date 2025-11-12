@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Alien.h"
 #include <Windows.h>
+#include <vector>
 
 class Missile : public GameObject
 {
@@ -13,7 +14,7 @@ public:
 
 	void update() override;
 	void fireMissile(Vector2 pos);
-	void missileCollisionDetection(const Alien* aliens, const int NUMBER_OF_ALIENS, const GameObject* barriers, const int NUMBER_OF_BARRIERS);
+	void missileCollisionDetection(std::vector<Alien>& aliens, std::vector<GameObject>& barriers);
 
 	void setMissileDamage(int damage) { m_damage = damage; }
 	int getMissileDamage() { return m_damage; }

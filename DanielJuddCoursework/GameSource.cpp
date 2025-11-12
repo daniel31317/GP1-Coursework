@@ -3,13 +3,21 @@
 
 GameSource::GameSource()
 {
-
+	m_currentState = &GameSource::initialiseGame;
 }
 GameSource::~GameSource()
 {
-	delete aliens;
-	delete barriers;
+
 }
+
+void GameSource::runGame()
+{
+	while (m_runLoop)
+	{
+		(this->*m_currentState)();
+	}
+}
+
 
 void GameSource::initialiseGame()
 {
@@ -18,13 +26,17 @@ void GameSource::initialiseGame()
 	//we can just use one ground object for it and just loop it in draw and just set the x to 0 since it doesnt matter for the moment
 	ground = GameObject(0, m_height - 1, '_');
 
+	//reserve blocks of memory for the vectors
+	aliens.reserve(NUMBER_OF_ALIENS);
+	barriers.reserve(NUMBER_OF_ALIENS);
+
 	m_currentState = &GameSource::runMenu;
 
 	srand((unsigned int)time(0));
 
 	for (int i = 0; i < NUMBER_OF_ALIENS; i++)
 	{
-		aliens[i] = Alien(rand() % m_width, i, 'A');
+		aliens.emplace_back(Alien(rand() % m_width, i, 'A'));
 	}
 
 	int x = 10;
@@ -35,7 +47,7 @@ void GameSource::initialiseGame()
 		{
 			x += 14;
 		}
-		barriers[i] = GameObject(i + x, m_height - 8, '=');
+		barriers.emplace_back(GameObject(i + x, m_height - 8, '='));
 	}
 
 
@@ -53,20 +65,19 @@ void GameSource::processInput()
 void GameSource::updateGame()
 {
 	player.update();
-	player.getMissile()->missileCollisionDetection(aliens, NUMBER_OF_ALIENS, barriers, NUMBER_OF_BARRIERS);
-
+	player.getMissile()->missileCollisionDetection(aliens, barriers);
 }
 
 void GameSource::updateBuffer()
 {
 	backBuffer->setGameObjectAtPos(player);
 
-	for (int i = 0; i < NUMBER_OF_ALIENS; i++)
+	for (int i = 0; i < aliens.size(); i++)
 	{
 		backBuffer->setGameObjectAtPos(aliens[i]);
 	}
 
-	for (int i = 0; i < NUMBER_OF_BARRIERS; i++)
+	for (int i = 0; i < barriers.size(); i++)
 	{
 		backBuffer->setGameObjectAtPos(barriers[i]);
 	}
@@ -157,11 +168,4 @@ void GameSource::quitGame()
 	m_runLoop = false;
 }
 
-void GameSource::runGame()
-{
-	while (m_runLoop)
-	{
-		(this->*m_currentState)();
-	}
-}
 

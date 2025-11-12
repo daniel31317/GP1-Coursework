@@ -22,7 +22,7 @@ void GameWindow::setWindow(int width, int height)
 	SetConsoleCursorInfo(out, &cursorInfo);
 }
 
-void GameWindow::setCursorPosition(int x, int y)
+void GameWindow::setCursorPosition(const int x, const int y)
 {
 	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	std::cout.flush();
