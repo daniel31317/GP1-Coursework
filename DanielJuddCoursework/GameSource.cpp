@@ -22,9 +22,8 @@ void GameSource::runGame()
 void GameSource::initialiseGame()
 {
 	m_gameWindow.setWindow(m_width, m_height);
+
 	player = Player(m_width / 2, m_height - 2, '^', 10);
-	//we can just use one ground object for it and just loop it in draw and just set the x to 0 since it doesnt matter for the moment
-	ground = GameObject(0, m_height - 1, '_');
 
 	//reserve blocks of memory for the vectors
 	aliens.reserve(NUMBER_OF_ALIENS);
@@ -49,6 +48,7 @@ void GameSource::initialiseGame()
 		}
 		barriers.emplace_back(GameObject(i + x, m_height - 8, '='));
 	}
+	
 
 
 	frontBuffer = std::make_unique<ScreenBuffer>(m_width, m_height);
@@ -85,6 +85,11 @@ void GameSource::updateBuffer()
 	if (player.getMissile()->isMissileActive())
 	{
 		backBuffer->setGameObjectAtPos(*player.getMissile());
+	}
+
+	for (int i = 0; i < m_width; i++)
+	{
+		backBuffer->setChar('_', i, m_height - 1);
 	}
 }
 
