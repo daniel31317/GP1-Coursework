@@ -21,7 +21,6 @@ void GameWindow::setWindow(Vector2 size)
 	m_width = size.x;
 	m_height = size.y;
 
-
 	SMALL_RECT windowSize = { 0, 0, (short)m_width + 20, (short)m_height + 20 };
 	if (!SetConsoleWindowInfo(hOut, TRUE, &windowSize))
 	{
@@ -32,7 +31,7 @@ void GameWindow::setWindow(Vector2 size)
 		std::cout << "Set ConsoleTitle failed with error" << GetLastError() << std::endl;
 	}
 
-	
+	SetConsoleTextAttribute(hOut, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 
 	CONSOLE_CURSOR_INFO cursorInfo;
 	GetConsoleCursorInfo(hOut, &cursorInfo);
