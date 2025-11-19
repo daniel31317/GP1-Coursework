@@ -20,7 +20,7 @@ void Missile::fireMissile(Vector2 pos)
 	m_isActive = true;
 }
 
-void Missile::missileCollisionDetection(std::vector<Alien>& aliens, std::vector<GameObject>& barriers)
+void Missile::missileCollisionDetection(std::vector<Alien>& aliens, std::vector<Barrier>& barriers)
 {
 	if (m_position.y < 0)
 	{

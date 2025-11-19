@@ -4,10 +4,12 @@
 #include "Player.h"
 #include "ScreenBuffer.h"
 #include "Button.h"
+#include "Barrier.h"
 #include <memory>
 #include <algorithm>
 #include <vector>
 #include <stdio.h>
+#include <chrono>
 
 class GameSource
 {
@@ -15,9 +17,9 @@ private:
 
 	bool m_runLoop = true;
 
-	const Vector2 m_windowSize = Vector2(82, 32);
-	const Vector2 m_gameSize = Vector2(80, 30);
-	const int m_gameDrawOffset = 1;
+	const Vector2 m_windowSize = Vector2(85, 35);
+	const Vector2 m_gameSize = Vector2(81, 31);
+	const int m_gameDrawOffset = 3;
 
 
 	GameWindow m_gameWindow;
@@ -28,8 +30,11 @@ private:
 	const int NUMBER_OF_ALIENS = 20;
 	const int NUMBER_OF_BARRIERS = 20;
 
+	float m_deltaTime = 0;
+	std::chrono::steady_clock::time_point m_lastTime;
+
 	std::vector<Alien> m_aliens;
-	std::vector<GameObject> m_barriers;
+	std::vector<Barrier> m_barriers;
 
 	std::unique_ptr<ScreenBuffer> m_frontBuffer;
 	std::unique_ptr<ScreenBuffer> m_backBuffer;
@@ -37,7 +42,9 @@ private:
 	std::unique_ptr<Button> m_spaceInvadersBtn;
 	std::unique_ptr<Button> m_froggerBtn;
 	std::unique_ptr<Button> m_quitBtn;
-	std::unique_ptr<Button> m_Border;
+
+	std::unique_ptr<Button> m_windowBorder;
+	std::unique_ptr<Button> m_GameBorder;
 
 	//stores current state of the game as a function pointer
 	void (GameSource::*m_currentState)();
@@ -69,9 +76,13 @@ public:
 	void swapBuffers();
 	void drawGame();
 
+	void drawGameUI();
+
 	void runMenu();
 
 	void quitGame();
+
+	void calculateDeltaTime();
 
 
 };

@@ -8,11 +8,11 @@ void GameWindow::setWindow(Vector2 size)
 	HWND owner = GetWindow(hwnd, GW_OWNER);
 	if (owner == NULL) {
 		// Windows 10
-		SetWindowPos(hwnd, nullptr, 0, 0, 800, 700, SWP_NOZORDER | SWP_NOMOVE);
+		SetWindowPos(hwnd, nullptr, 0, 0, 900, 900, SWP_NOZORDER | SWP_NOMOVE);
 	}
 	else {
 		// Windows 11
-		SetWindowPos(owner, nullptr, 0, 0, 800, 675, SWP_NOZORDER | SWP_NOMOVE);
+		SetWindowPos(owner, nullptr, 0, 0, 900, 900, SWP_NOZORDER | SWP_NOMOVE);
 	}
 
 

@@ -14,7 +14,7 @@ class Player : public GameObject
 		Player(int xPos, int yPos, char body, int lives, bool isGameSpaceInvaders);
 
 		void processInput();
-		void update() override;
+		virtual void update() override;
 
 		void setPlayerHealth(int health) { m_lives = health; }
 		int getPlayerHealth() const { return m_lives; }
