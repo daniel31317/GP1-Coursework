@@ -2,6 +2,20 @@
 
 void GameWindow::setWindow(Vector2 size)
 {
+	//from https://stackoverflow.com/questions/79152088/how-to-change-console-size-on-windows-11
+	HWND hwnd = GetConsoleWindow();
+	Sleep(10);//If you execute these code immediately after the program starts, you must wait here for a short period of time, otherwise GetWindow will fail. I speculate that it may be because the console has not been fully initialized.
+	HWND owner = GetWindow(hwnd, GW_OWNER);
+	if (owner == NULL) {
+		// Windows 10
+		SetWindowPos(hwnd, nullptr, 0, 0, 800, 700, SWP_NOZORDER | SWP_NOMOVE);
+	}
+	else {
+		// Windows 11
+		SetWindowPos(owner, nullptr, 0, 0, 800, 675, SWP_NOZORDER | SWP_NOMOVE);
+	}
+
+
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	m_width = size.x;

@@ -3,33 +3,31 @@
 
 GameObject::GameObject()
 {
-	position = Vector2();
-	body = ' ';
+	m_position = Vector2();
+	m_body = ' ';
 }
 
-GameObject::GameObject(int xPos, int yPos, char body)
+GameObject::GameObject(int xPos, int yPos, char body) : m_position(xPos, yPos), m_body(body)
 {
-	position = Vector2(xPos, yPos);
-	this->body = body;
+
 }
-GameObject::GameObject(Vector2 position, char body)
+GameObject::GameObject(Vector2 position, char body) : m_position(position), m_body(body)
 {
-	this->position = position;
-	this->body = body;
+	
 }
-void GameObject::draw()
+void GameObject::draw() const
 {
-	std::cout << body;
+	std::cout << m_body;
 }
 
 void GameObject::move(int x, int y)
 {
-	position.x += x;
-	position.y += y;
+	m_position.x += x;
+	m_position.y += y;
 }
 void GameObject::move(Vector2 move)
 {
-	position += move;
+	m_position += move;
 }
 void GameObject::update()
 {

@@ -3,7 +3,7 @@ Player::Player() : GameObject()
 {
 	m_missile = Missile(0,0,'!');
 }
-Player::Player(int xPos, int yPos, char body, int health) : GameObject(xPos, yPos, body), m_health(health)
+Player::Player(int xPos, int yPos, char body, int health, bool isGameSpaceInvaders) : GameObject(xPos, yPos, body), m_lives(health), m_isSpaceInvaders(isGameSpaceInvaders)
 {
 	m_missile = Missile(xPos, yPos, '!');
 }
@@ -11,21 +11,54 @@ Player::Player(int xPos, int yPos, char body, int health) : GameObject(xPos, yPo
 
 void Player::processInput()
 {
-	//A is pressed
-	if (GetKeyState(65) & 0x8000 && position.x > 1)
+	//Space invaders input
+	if (m_isSpaceInvaders)
 	{
-		move(-1, 0);
+		//A is pressed
+		if (GetKeyState(65) & 0x8000 && m_position.x > 1)
+		{
+			move(-1, 0);
+		}
+		//D is pressed
+		else if (GetKeyState(68) & 0x8000 && m_position.x < 79)
+		{
+			move(1, 0);
+		}
+		//Space is pressed
+		if (GetKeyState(32) & 0x8000)
+		{
+			m_missile.fireMissile(m_position);
+		}
 	}
-	//D is pressed
-	else if (GetKeyState(68) & 0x8000 && position.x < 79)
+	//Frogger Input
+	else
 	{
-		move(1, 0);
+		//W is pressed
+		if (GetKeyState(87) & 0x8000 && m_position.y > 0)
+		{
+			move(0, -1);
+			m_body = '^';
+		}
+		//S is pressed
+		else if (GetKeyState(83) & 0x8000 && m_position.y < 29)
+		{
+			move(0, 1);
+			m_body = 'v';
+		}
+		//A is pressed
+		else if (GetKeyState(65) & 0x8000 && m_position.x > 0)
+		{
+			move(-1, 0);
+			m_body = '<';
+		}
+		//D is pressed
+		else if (GetKeyState(68) & 0x8000 && m_position.x < 79)
+		{
+			move(1, 0);
+			m_body = '>';
+		}
 	}
-	//Space is pressed
-	if (GetKeyState(32) & 0x8000)
-	{
-		m_missile.fireMissile(position);
-	}
+	
 }
 void Player::update()
 {

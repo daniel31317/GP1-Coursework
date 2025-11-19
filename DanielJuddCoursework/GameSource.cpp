@@ -3,7 +3,20 @@
 
 GameSource::GameSource()
 {
-	m_currentState = &GameSource::initialiseGame;
+	m_gameWindow.setWindow(m_windowSize);
+
+	m_frontBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
+	m_backBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
+
+	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "SpaceInvaders");
+	m_froggerBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Frogger");
+	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 21), "Quit");
+
+	m_Border = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
+
+	m_currentState = &GameSource::runMenu;
+	m_updateGame = &GameSource::updateGameSpaceInvaders;
+	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 }
 GameSource::~GameSource()
 {
@@ -19,17 +32,13 @@ void GameSource::runGame()
 }
 
 
-void GameSource::initialiseGame()
+void GameSource::initialiseSpaceInvaders()
 {
-	m_gameWindow.setWindow(m_windowSize);
-
-	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 2, '^', 10);
+	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 2, '^', 10, true);
 
 	//reserve blocks of memory for the vectors
 	m_aliens.reserve(NUMBER_OF_ALIENS);
 	m_barriers.reserve(NUMBER_OF_ALIENS);
-
-	m_currentState = &GameSource::runMenu;
 
 	srand((unsigned int)time(0));
 
@@ -49,14 +58,22 @@ void GameSource::initialiseGame()
 		m_barriers.emplace_back(GameObject(i + x, m_gameSize.y - 8, '='));
 	}
 
-	m_frontBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
-	m_backBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
+	//set function pointers for game loop for specific game
+	m_updateGame = &GameSource::updateGameSpaceInvaders;
+	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 
-	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "SpaceInvaders");
-	m_snakeBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Snake");
-	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 21), "Quit");
+	m_currentState = &GameSource::gameLoop;
+}
 
-	m_Border = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
+void GameSource::initialiseFrogger()
+{
+	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 2, '^', 10, false);
+
+	//set function pointers for game loop for specific game
+	m_updateGame = &GameSource::updateGameFrogger;
+	m_updateBuffer = &GameSource::updateBufferFrogger;
+
+	m_currentState = &GameSource::gameLoop;
 }
 
 
@@ -66,13 +83,13 @@ void GameSource::processInput()
 }
 
 
-void GameSource::updateGame()
+void GameSource::updateGameSpaceInvaders()
 {
 	m_player.update();
 	m_player.getMissile()->missileCollisionDetection(m_aliens, m_barriers);
 }
 
-void GameSource::updateBuffer()
+void GameSource::updateBufferSpaceInvaders()
 {
 	m_backBuffer->setGameObjectAtPos(m_player);
 
@@ -97,6 +114,23 @@ void GameSource::updateBuffer()
 	}
 }
 
+
+void GameSource::updateGameFrogger()
+{
+	m_player.update();
+}
+
+void GameSource::updateBufferFrogger()
+{
+	m_backBuffer->setGameObjectAtPos(m_player);
+}
+
+
+
+
+
+
+
 void GameSource::swapBuffers()
 {	
 	std::swap(m_frontBuffer, m_backBuffer);
@@ -120,10 +154,9 @@ void GameSource::runMenu()
 {
 	system("cls");
 
-	
 	m_Border->drawButton(m_gameWindow);
 	m_spaceInvadersBtn->drawButton(m_gameWindow);
-	m_snakeBtn->drawButton(m_gameWindow);
+	m_froggerBtn->drawButton(m_gameWindow);
 	m_quitBtn->drawButton(m_gameWindow);
 	
 
@@ -154,12 +187,12 @@ void GameSource::runMenu()
 			{
 				if (m_spaceInvadersBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
 				{
-					m_currentState = &GameSource::gameLoop;
+					m_currentState = &GameSource::initialiseSpaceInvaders;
 					madeChoice = true;
 				}
-				else if (m_snakeBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				else if (m_froggerBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
 				{
-					m_currentState = &GameSource::gameLoop;
+					m_currentState = &GameSource::initialiseFrogger;
 					madeChoice = true;
 				}
 				else if (m_quitBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
@@ -211,8 +244,8 @@ VOID GameSource::ErrorExit(LPCSTR lpszMessage, HANDLE& out, DWORD& oldConsole)
 void GameSource::gameLoop()
 {
 	processInput();
-	updateGame();
-	updateBuffer();
+	(this->*m_updateGame)();
+	(this->*m_updateBuffer)();
 	swapBuffers();
 	drawGame();
 }

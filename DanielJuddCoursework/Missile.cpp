@@ -15,14 +15,14 @@ void Missile::fireMissile(Vector2 pos)
 		return;
 	}
 
-	position = pos;
-	position.y--;
+	m_position = pos;
+	m_position.y--;
 	m_isActive = true;
 }
 
 void Missile::missileCollisionDetection(std::vector<Alien>& aliens, std::vector<GameObject>& barriers)
 {
-	if (position.y < 0)
+	if (m_position.y < 0)
 	{
 		m_isActive = false;
 		return;
@@ -30,7 +30,7 @@ void Missile::missileCollisionDetection(std::vector<Alien>& aliens, std::vector<
 
 	for (int i = 0; i < aliens.size(); i++)
 	{
-		if (aliens[i].getPosition() == position)
+		if (aliens[i].getPosition() == m_position)
 		{
 			//swap that element to with the back then pop it 
 			//this is better because we aren't shifting the rest of the vector after the index we want to remove
@@ -43,7 +43,7 @@ void Missile::missileCollisionDetection(std::vector<Alien>& aliens, std::vector<
 
 	for (int i = 0; i < barriers.size(); i++)
 	{
-		if (barriers[i].getPosition() == position)
+		if (barriers[i].getPosition() == m_position)
 		{
 			std::swap(barriers[i], barriers.back());
 			barriers.pop_back();

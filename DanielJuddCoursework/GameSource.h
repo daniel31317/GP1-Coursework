@@ -34,13 +34,16 @@ private:
 	std::unique_ptr<ScreenBuffer> m_frontBuffer;
 	std::unique_ptr<ScreenBuffer> m_backBuffer;
 
-	std::unique_ptr <Button> m_spaceInvadersBtn;
-	std::unique_ptr <Button> m_snakeBtn;
-	std::unique_ptr <Button> m_quitBtn;
-	std::unique_ptr <Button> m_Border;
+	std::unique_ptr<Button> m_spaceInvadersBtn;
+	std::unique_ptr<Button> m_froggerBtn;
+	std::unique_ptr<Button> m_quitBtn;
+	std::unique_ptr<Button> m_Border;
 
 	//stores current state of the game as a function pointer
 	void (GameSource::*m_currentState)();
+
+	void (GameSource::*m_updateGame)();
+	void (GameSource::*m_updateBuffer)();
 
 	VOID ErrorExit(LPCSTR, HANDLE& out, DWORD& oldConsole);
 	void HandleSettingUpConsoleForMenu(HANDLE& out, DWORD& oldConsole);
@@ -48,14 +51,21 @@ private:
 public:
 	GameSource();
 	~GameSource();
-	void initialiseGame();
+	void initialiseSpaceInvaders();
+	void initialiseFrogger();
 	
 	void runGame();
 
 	void gameLoop();
+
 	void processInput();
-	void updateGame();
-	void updateBuffer();
+
+	void updateGameSpaceInvaders();
+	void updateBufferSpaceInvaders();
+	
+	void updateGameFrogger();
+	void updateBufferFrogger();
+
 	void swapBuffers();
 	void drawGame();
 

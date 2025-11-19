@@ -5,18 +5,19 @@
 class Player : public GameObject
 {
 	private:
-		int m_health = 0;
+		int m_lives = 0;
 		Missile m_missile;
+		bool m_isSpaceInvaders = true;
 	public:
 		using GameObject::GameObject;
 		Player();
-		Player(int xPos, int yPos, char body, int health);
+		Player(int xPos, int yPos, char body, int lives, bool isGameSpaceInvaders);
 
 		void processInput();
 		void update() override;
 
-		void setPlayerHealth(int health) { m_health = health; }
-		int getPlayerHealth() const { return m_health; }
+		void setPlayerHealth(int health) { m_lives = health; }
+		int getPlayerHealth() const { return m_lives; }
 		Missile* getMissile() { return &m_missile; }
 };
 
