@@ -9,6 +9,11 @@ Barrier::Barrier(int xPos, int yPos, char body, bool isMovingright) : GameObject
 	
 }
 
+Barrier::Barrier(Vector2 pos, char body, bool isMovingright) : GameObject(pos, body), m_movingRight(isMovingright)
+{
+
+}
+
 void Barrier::update()
 {
 	if (m_movingRight)

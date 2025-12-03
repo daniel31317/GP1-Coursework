@@ -30,6 +30,8 @@ void GameSource::runGame()
 {
 	while (m_runLoop)
 	{
+		calculateDeltaTime();
+		updateScore();
 		(this->*m_currentState)();
 	}
 }
@@ -46,30 +48,36 @@ void GameSource::initialiseSpaceInvaders()
 	m_aliens.reserve(NUMBER_OF_ALIENS);
 	m_barriers.reserve(NUMBER_OF_BARRIERS);
 
-	srand((unsigned int)time(0));
+	Vector2 alienPos = Vector2(20, 5);
 
 	for (int i = 0; i < NUMBER_OF_ALIENS; i++)
 	{
-		m_aliens.emplace_back(Alien(rand() % m_gameSize.x, i, 'A'));
+		if (i % 9 == 0 && i != 0)
+		{
+			alienPos.x = 20;
+			alienPos.y += 2;
+		}
+		m_aliens.emplace_back(Alien(alienPos, 'A'));
+		alienPos.x += 5;
 	}
 
-	int x = 10;
+	alienPos = Vector2(10, m_gameSize.y - 8);
 
 	for (int i = 0; i < NUMBER_OF_BARRIERS; ++i) 
 	{
 		if (i % 5 == 0 && i != 0)
 		{
-			x += 14;
+			alienPos.x += 14;
 		}
-		m_barriers.emplace_back(Barrier(i + x, m_gameSize.y - 8, '=', false));
+		m_barriers.emplace_back(Barrier(alienPos.x + i, alienPos.y, '=', false));
 	}
 
 	//draw score
 	m_gameWindow.setCursorPosition(1, m_windowSize.y - 2);
 	std::cout << "SCORE : ";
-	m_gameWindow.setCursorPosition(m_scoreDrawPosition);
 	score = 0;
-	std::cout << std::to_string(score);
+
+	updateScore();
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
@@ -119,12 +127,37 @@ void GameSource::processInput()
 void GameSource::updateGameSpaceInvaders()
 {
 	m_player.update();
+
+	m_currentAlienMoveDelta += m_deltaTime;
+
+	if (m_currentAlienMoveDelta >= m_currentAlienMoveDelay)
+	{
+		for (int i = 0; i < m_aliens.size(); i++)
+		{
+			if (m_aliens[i].moveAlien(m_gameSize))
+			{
+				for (int j = 0; j < m_aliens.size(); j++)
+				{
+					m_aliens[j].switchDirection();
+				}
+
+				for (int j = 0; j < i; j++)
+				{
+					m_aliens[j].moveAlien(m_gameSize);
+				}
+
+				break;
+			}		
+		}
+		m_currentAlienMoveDelta = 0;
+	}
+
 	if(m_player.getMissile()->collisionDetection<Alien>(m_aliens))
 	{
 		score += 10;
-		m_gameWindow.setCursorPosition(m_scoreDrawPosition);
-		std::cout << std::to_string(score);
+		updateScore();
 	}
+
 	m_player.getMissile()->collisionDetection<Barrier>(m_barriers);
 }
 
@@ -191,6 +224,16 @@ void GameSource::drawGame()
 		}
 	}
 }
+
+
+void GameSource::updateScore()
+{
+	m_gameWindow.setCursorPosition(m_scoreDrawPosition);
+	std::cout << std::to_string(m_deltaTime);
+}
+
+
+
 
 void GameSource::drawGameUI()
 {
