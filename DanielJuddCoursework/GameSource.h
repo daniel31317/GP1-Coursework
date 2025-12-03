@@ -20,15 +20,16 @@ private:
 	const Vector2 m_windowSize = Vector2(85, 35);
 	const Vector2 m_gameSize = Vector2(81, 31);
 	const int m_gameDrawOffset = 3;
+	const Vector2 m_scoreDrawPosition = Vector2(9, 33);
+	const int NUMBER_OF_ALIENS = 20;
+	const int NUMBER_OF_BARRIERS = 20;
 
+	int score = 0;
 
 	GameWindow m_gameWindow;
 
 	GameObject m_ground;
 	Player m_player;
-
-	const int NUMBER_OF_ALIENS = 20;
-	const int NUMBER_OF_BARRIERS = 20;
 
 	float m_deltaTime = 0;
 	std::chrono::steady_clock::time_point m_lastTime;

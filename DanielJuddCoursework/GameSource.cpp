@@ -64,6 +64,13 @@ void GameSource::initialiseSpaceInvaders()
 		m_barriers.emplace_back(Barrier(i + x, m_gameSize.y - 8, '=', false));
 	}
 
+	//draw score
+	m_gameWindow.setCursorPosition(1, m_windowSize.y - 2);
+	std::cout << "SCORE : ";
+	m_gameWindow.setCursorPosition(m_scoreDrawPosition);
+	score = 0;
+	std::cout << std::to_string(score);
+
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
 	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
@@ -112,7 +119,13 @@ void GameSource::processInput()
 void GameSource::updateGameSpaceInvaders()
 {
 	m_player.update();
-	m_player.getMissile()->missileCollisionDetection(m_aliens, m_barriers);
+	if(m_player.getMissile()->collisionDetection<Alien>(m_aliens))
+	{
+		score += 10;
+		m_gameWindow.setCursorPosition(m_scoreDrawPosition);
+		std::cout << std::to_string(score);
+	}
+	m_player.getMissile()->collisionDetection<Barrier>(m_barriers);
 }
 
 void GameSource::updateBufferSpaceInvaders()
