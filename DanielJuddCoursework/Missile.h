@@ -11,10 +11,13 @@ class Missile : public GameObject
 private:
 	int m_damage = 0;
 	bool m_isActive = false;
+	bool m_isPlayerMissile = false;
 	int m_lastAlienHitScore = 0;
 public:
 	using GameObject::GameObject;
-
+	Missile() = default;
+	Missile(Vector2 pos, char body, bool playersMissile);
+	Missile(int xPos, int yPos, char body, bool playersMissile);
 	virtual void update() override;
 	void fireMissile(Vector2 pos);
 

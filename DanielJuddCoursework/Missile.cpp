@@ -1,15 +1,40 @@
 #include "Missile.h"
 
+Missile::Missile(Vector2 pos, char body, bool playersMissile) : GameObject(pos, body), m_isPlayerMissile(playersMissile)
+{
+
+}
+
+Missile::Missile(int xPos, int yPos, char body, bool playersMissile) : GameObject(xPos, yPos, body), m_isPlayerMissile(playersMissile)
+{
+
+}
+
 void Missile::update()
 {
-	if (m_isActive)
+	if (m_isPlayerMissile)
 	{
-		move(0, -1);
+		if (m_isActive)
+		{
+			move(0, -1);
+		}
+		if (m_position.y < 0)
+		{
+			m_isActive = false;
+		}
 	}
-	if (m_position.y < 0)
+	else
 	{
-		m_isActive = false;
+		if (m_isActive)
+		{
+			move(0, 1);
+		}
+		if (m_position.y < 0)
+		{
+			m_isActive = false;
+		}
 	}
+	
 }
 void Missile::fireMissile(Vector2 pos)
 {

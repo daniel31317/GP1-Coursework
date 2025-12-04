@@ -166,7 +166,7 @@ void GameSource::updateGameSpaceInvaders()
 		updateScore();
 	}
 
-	m_player.getMissile()->collisionDetection(m_barriers);
+	playerMissile->collisionDetection(m_barriers);
 }
 
 void GameSource::updateBufferSpaceInvaders()
