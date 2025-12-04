@@ -11,6 +11,7 @@ class Missile : public GameObject
 private:
 	int m_damage = 0;
 	bool m_isActive = false;
+	int m_lastAlienHitScore = 0;
 public:
 	using GameObject::GameObject;
 
@@ -19,33 +20,12 @@ public:
 
 	void setMissileDamage(int damage) { m_damage = damage; }
 	int getMissileDamage() const { return m_damage; }
+	int getAlienHitScore() const { return m_lastAlienHitScore; }
 	bool isMissileActive() const { return m_isActive; }
 	void setMissileActive(bool active) { m_isActive = active; }
-
+	bool collisionDetection(std::vector<Alien>& aliens);
+	bool collisionDetection(std::vector<Barrier>& barriers);
 	//from https://www.w3schools.com/cpp/cpp_templates.asp
-	template <typename T>
-	bool collisionDetection(std::vector<T>& detections)
-	{
-		//from https://www.geeksforgeeks.org/cpp/stdis_base_of-template-in-c-with-examples/
-		if (!std::is_base_of<GameObject, T>::value)
-		{
-			return false;
-		}
-
-		for (int i = 0; i < detections.size(); i++)
-		{
-			if (detections[i].getPosition() == m_position)
-			{
-				//swap that element to with the back then pop it 
-				//this is better because we aren't shifting the rest of the vector after the index we want to remove
-				std::swap(detections[i], detections.back());
-				detections.pop_back();
-				m_isActive = false;
-				return true;
-			}
-		}
-
-		return false;
-	}
+	
 };
 

@@ -1,11 +1,7 @@
 #include "Alien.h"
-void Alien::setPlayerHealth(int health)
+Alien::Alien(Vector2 pos, char body, int score) : GameObject(pos, body), m_scoreForKill(score)
 {
-	m_health = health;
-}
-int Alien::getPlayerHealth()
-{
-	return m_health;
+
 }
 
 bool Alien::moveAlien(Vector2 gameSize)

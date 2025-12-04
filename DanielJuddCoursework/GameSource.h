@@ -25,7 +25,7 @@ private:
 	const int NUMBER_OF_ALIENS = 45;
 	const int NUMBER_OF_BARRIERS = 20;
 
-	const float m_maxAlienMoveDelay = 0.005f;
+	const float m_maxAlienMoveDelay = 1.5f;
 	float m_currentAlienMoveDelay = m_maxAlienMoveDelay;
 	float m_currentAlienMoveDelta = 0;
 
