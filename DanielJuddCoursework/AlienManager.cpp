@@ -36,7 +36,7 @@ void AlienManager::initialiseAliens()
 }
 
 
-void AlienManager::update(float deltaTime, Player& player)
+void AlienManager::update(float deltaTime, Player& player, std::vector<Barrier>& barriers)
 {
 	m_currentAlienMoveDelta += deltaTime;
 	m_currentAlienShootDelta += deltaTime;
@@ -81,6 +81,12 @@ void AlienManager::update(float deltaTime, Player& player)
 		if(m_missiles[i].collisionDetection(player))
 		{
 			player.loseLife();
+		}
+
+		//do an additional check for the y co-ordinate just so we dont have to loop through every barrier for every missile
+		if (barriers.size() > 0 && barriers[0].getPosition().y == m_missiles[i].getPosition().y)
+		{
+			m_missiles[i].collisionDetection(barriers);
 		}
 	}
 

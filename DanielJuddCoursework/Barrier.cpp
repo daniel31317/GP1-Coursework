@@ -14,6 +14,16 @@ Barrier::Barrier(Vector2 pos, char body, bool isMovingright) : GameObject(pos, b
 
 }
 
+void Barrier::damageBarrier()
+{
+	if (m_barrierHealth == 0)
+	{
+		return;
+	}
+	m_barrierHealth--;
+	m_body = m_barrierStates[m_barrierHealth];
+}
+
 void Barrier::update()
 {
 	if (m_movingRight)

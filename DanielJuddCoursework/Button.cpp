@@ -7,7 +7,6 @@ Button::Button()
 	m_position = Vector2();
 	m_drawPosition = Vector2();
 	m_name = "";
-	m_buttonContent = new char* [0];
 }
 
 Button::Button(int width, int height, Vector2 position, std::string name)
@@ -36,13 +35,13 @@ Button::Button(int width, int height, Vector2 position, std::string name)
 		std::exit(EXIT_FAILURE);
 	}
 
-	m_buttonContent = new char*[width];
+	m_buttonContent.resize(width);
 
 	int nameIndex = 0;
 	int nameStartPos = (width / 2) - (m_name.length() / 2);
 
 	for (int i = 0; i < width; ++i) {
-		m_buttonContent[i] = new char[height];
+		m_buttonContent[i] = std::vector<char>(height);
 		for (int j = 0; j < height; j++)
 		{
 			m_buttonContent[i][j] = getButtonDesignAtPosition(i, j, nameIndex, nameStartPos);
@@ -50,15 +49,6 @@ Button::Button(int width, int height, Vector2 position, std::string name)
 	}
 }
 
-
-Button::~Button()
-{
-	for (int i = 0; i < m_width; i++)
-	{
-		delete[] m_buttonContent[i];
-	}
-	delete[] m_buttonContent;
-}
 
 
 void Button::drawButton(GameWindow& window)

@@ -18,8 +18,7 @@ class Player : public GameObject
 
 		void loseLife() { m_lives--; }
 		int getPlayerLives() const { return m_lives; }
-		void setPlayerHealth(int health) { m_lives = health; }
-		int getPlayerHealth() const { return m_lives; }
+		void setPlayerLives(int health) { m_lives = health; }
 		Missile* getMissile() { return &m_missile; }
 };
 

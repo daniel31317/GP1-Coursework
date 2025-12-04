@@ -11,6 +11,9 @@ GameSource::GameSource()
 	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "SpaceInvaders");
 	m_froggerBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Frogger");
 	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 21), "Quit");
+	m_menuBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Menu");
+	m_retryBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "Retry");
+
 
 	m_windowBorder = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
 	m_GameBorder = std::make_unique<Button>(m_gameSize.x, m_gameSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
@@ -23,10 +26,6 @@ GameSource::GameSource()
 	m_alienManager.setGameSize(m_gameSize);
 
 	m_lastTime = std::chrono::steady_clock::now();
-}
-GameSource::~GameSource()
-{
-
 }
 
 void GameSource::runGame()
@@ -55,23 +54,31 @@ void GameSource::initialiseSpaceInvaders()
 		{
 			barrierPos.x += 14;
 		}
-		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '=', false);
+		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '#', false);
 	}
 
 	//draw score
-	m_gameWindow.setCursorPosition(1, m_windowSize.y - 2);
-	std::cout << "SCORE : ";
-	score = 0;
-	updateScore();
+	if (!m_keepScore)
+	{
+		m_gameWindow.setCursorPosition(1, m_windowSize.y - 2);
+		std::cout << "SCORE : ";
+		m_score = 0;
+		updateScore();
 
-	m_gameWindow.setCursorPosition(m_livesDrawPosition);
-	std::cout << "LIVES : <3 <3 <3 <3";
+		m_gameWindow.setCursorPosition(m_livesDrawPosition);
+		std::cout << "LIVES : <3 <3 <3 <3";
+	}
+	
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
 	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 
 	m_currentState = &GameSource::gameLoop;
+
+	m_keepScore = false;
+
+	m_player.setPlayerLives(1);
 }
 
 void GameSource::initialiseFrogger()
@@ -116,10 +123,14 @@ void GameSource::updateGameSpaceInvaders()
 	m_player.update();
 
 	int livesBefore = m_player.getPlayerLives();
-	m_alienManager.update(m_deltaTime, m_player);
+	m_alienManager.update(m_deltaTime, m_player, m_barriers);
 	if (livesBefore != m_player.getPlayerLives())
 	{
 		removeLife(livesBefore);
+		if (m_player.getPlayerLives() == 0)
+		{
+			m_currentState = &GameSource::runRetryMenu;
+		}
 	}
 
  	Missile* playerMissile = m_player.getMissile();
@@ -127,8 +138,13 @@ void GameSource::updateGameSpaceInvaders()
 	if(playerMissile->collisionDetection(*m_alienManager.getAliens()))
 	{
 		m_alienManager.reduceDelay();
-		score += playerMissile->getAlienHitScore();
+		m_score += playerMissile->getAlienHitScore();
 		updateScore();
+		if (m_alienManager.getNumberOfAliens() == 0)
+		{
+			m_keepScore = true;
+			m_currentState = &GameSource::initialiseSpaceInvaders;
+		}
 	}
 
 	playerMissile->collisionDetection(m_barriers);
@@ -194,7 +210,7 @@ void GameSource::drawGame()
 void GameSource::updateScore()
 {
 	m_gameWindow.setCursorPosition(m_scoreDrawPosition);
-	std::cout << std::to_string(score);
+	std::cout << std::to_string(m_score);
 }
 
 void GameSource::removeLife(int previousLives)
@@ -280,6 +296,69 @@ void GameSource::runMenu()
 	SetConsoleMode(out, oldConsole);
 }
 
+void GameSource::runRetryMenu()
+{
+	system("cls");
+
+	m_frontBuffer->clearBuffer();
+	m_backBuffer->clearBuffer();
+
+	m_windowBorder->drawButton(m_gameWindow);
+	m_quitBtn->drawButton(m_gameWindow);
+	m_menuBtn->drawButton(m_gameWindow);
+	m_retryBtn->drawButton(m_gameWindow);
+
+
+	//from https://stackoverflow.com/questions/73958407/c-get-users-cursor-position-in-console-cells 
+	//and https://learn.microsoft.com/en-us/windows/console/reading-input-buffer-events
+	//with some additional settings and modifications to get it working with what i needed it to do
+
+	HANDLE out = GetStdHandle(STD_INPUT_HANDLE);
+	INPUT_RECORD ir;
+	DWORD dwRead;
+	DWORD oldConsole;
+
+	bool madeChoice = false;
+
+	HandleSettingUpConsoleForMenu(out, oldConsole);
+
+	while (ReadConsoleInput(out, &ir, 1, &dwRead) && dwRead == 1 && !madeChoice)
+	{
+		//if it is a mouse event
+		if (ir.EventType == MOUSE_EVENT)
+		{
+			//ignore all mouse events which don't involve mouse button presses
+			if (ir.Event.MouseEvent.dwEventFlags != 0 && ir.Event.MouseEvent.dwEventFlags != DOUBLE_CLICK)
+				continue;
+
+			//if mouse was released
+			if (ir.Event.MouseEvent.dwButtonState == 0)
+			{
+				if (m_retryBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				{
+					m_currentState = &GameSource::initialiseSpaceInvaders;
+					drawGameUI();
+					madeChoice = true;
+				}
+				else if (m_menuBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				{
+					m_currentState = &GameSource::runMenu;
+					madeChoice = true;
+				}
+				else if (m_quitBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				{
+					m_currentState = &GameSource::quitGame;
+					madeChoice = true;
+				}
+			}
+			fflush(stdout);
+		}
+	}
+
+	//set console to what it was previously
+	SetConsoleMode(out, oldConsole);
+}
+
 
 void GameSource::HandleSettingUpConsoleForMenu(HANDLE& out, DWORD& oldConsole)
 {
@@ -308,7 +387,7 @@ VOID GameSource::ErrorExit(LPCSTR lpszMessage, HANDLE& out, DWORD& oldConsole)
 
 	SetConsoleMode(out, oldConsole);
 
-	ExitProcess(0);
+	std::exit(1);
 }
 
 

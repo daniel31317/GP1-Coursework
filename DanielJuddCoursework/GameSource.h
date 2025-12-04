@@ -26,7 +26,9 @@ private:
 	
 	const int NUMBER_OF_BARRIERS = 20;
 
-	int score = 0;
+	int m_score = 0;
+
+	bool m_keepScore = false;
 
 	GameWindow m_gameWindow;
 
@@ -46,6 +48,8 @@ private:
 	std::unique_ptr<Button> m_spaceInvadersBtn;
 	std::unique_ptr<Button> m_froggerBtn;
 	std::unique_ptr<Button> m_quitBtn;
+	std::unique_ptr<Button> m_menuBtn;
+	std::unique_ptr<Button> m_retryBtn;
 
 	std::unique_ptr<Button> m_windowBorder;
 	std::unique_ptr<Button> m_GameBorder;
@@ -61,7 +65,6 @@ private:
 
 public:
 	GameSource();
-	~GameSource();
 	void initialiseSpaceInvaders();
 	void initialiseFrogger();
 	
@@ -85,6 +88,8 @@ public:
 	void drawGameUI();
 
 	void runMenu();
+
+	void runRetryMenu();
 
 	void quitGame();
 

@@ -93,10 +93,14 @@ bool Missile::collisionDetection(std::vector<Barrier>& barriers)
 	{
 		if (barriers[i].getPosition() == m_position)
 		{
-			//swap that element to with the back then pop it 
-			//this is better because we aren't shifting the rest of the vector after the index we want to remove
-			std::swap(barriers[i], barriers.back());
-			barriers.pop_back();
+			barriers[i].damageBarrier();
+			if (barriers[i].getBarrierHealth() == 0)
+			{
+				//swap that element to with the back then pop it 
+				//this is better because we aren't shifting the rest of the vector after the index we want to remove
+				std::swap(barriers[i], barriers.back());
+				barriers.pop_back();
+			}	
 			m_isActive = false;
 			return true;
 		}

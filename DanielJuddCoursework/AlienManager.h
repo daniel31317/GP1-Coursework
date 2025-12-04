@@ -32,10 +32,10 @@ public:
 	AlienManager();
 	void setGameSize(const Vector2 gameSize) { m_gameSize = gameSize; }
 	void initialiseAliens();
-	void update(float deltaTime, Player& player);
+	void update(float deltaTime, Player& player, std::vector<Barrier>& barriers);
 	void updateBuffer(ScreenBuffer& buffer);
 	std::vector<Alien>* getAliens() { return &m_aliens; }
 	void reduceDelay();
-	const int getNumberOfAliens() const { return m_aliens.size(); }
+	int getNumberOfAliens() const { return m_aliens.size(); }
 };
 
