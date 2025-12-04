@@ -19,6 +19,7 @@ GameSource::GameSource()
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
 	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 
+	m_barriers.reserve(NUMBER_OF_BARRIERS);
 	m_alienManager.setGameSize(m_gameSize);
 
 	m_lastTime = std::chrono::steady_clock::now();
@@ -40,16 +41,11 @@ void GameSource::runGame()
 
 void GameSource::initialiseSpaceInvaders()
 {
-	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 3, '^', 10, true);
+	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 3, '^', true);
 
 	m_alienManager.initialiseAliens();
 
 	m_barriers.clear();
-
-	//reserve blocks of memory for the vectors
-	
-	m_barriers.reserve(NUMBER_OF_BARRIERS);
-
 	
 	Vector2 barrierPos = Vector2(10, m_gameSize.y - 8);
 
@@ -59,7 +55,7 @@ void GameSource::initialiseSpaceInvaders()
 		{
 			barrierPos.x += 14;
 		}
-		m_barriers.emplace_back(Barrier(barrierPos.x + i, barrierPos.y, '=', false));
+		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '=', false);
 	}
 
 	//draw score
@@ -70,7 +66,6 @@ void GameSource::initialiseSpaceInvaders()
 
 	m_gameWindow.setCursorPosition(m_livesDrawPosition);
 	std::cout << "LIVES : <3 <3 <3 <3";
-	m_currentLives = m_maxLives;
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
@@ -81,10 +76,9 @@ void GameSource::initialiseSpaceInvaders()
 
 void GameSource::initialiseFrogger()
 {
-	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 3, '^', 10, false);
+	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 3, '^', false);
 
-	m_barriers.clear();
-	m_barriers.reserve(NUMBER_OF_BARRIERS);
+	m_barriers.clear();	
 
 	int x = 10;
 
@@ -94,7 +88,7 @@ void GameSource::initialiseFrogger()
 		{
 			x += 14;
 		}
-		m_barriers.emplace_back(Barrier(i + x, m_gameSize.y - 8, '=', false));
+		m_barriers.emplace_back(i + x, m_gameSize.y - 8, '=', false);
 	}
 
 	//set function pointers for game loop for specific game
@@ -121,9 +115,14 @@ void GameSource::updateGameSpaceInvaders()
 {
 	m_player.update();
 
-	m_alienManager.update(m_deltaTime);
+	int livesBefore = m_player.getPlayerLives();
+	m_alienManager.update(m_deltaTime, m_player);
+	if (livesBefore != m_player.getPlayerLives())
+	{
+		removeLife(livesBefore);
+	}
 
-	Missile* playerMissile = m_player.getMissile();
+ 	Missile* playerMissile = m_player.getMissile();
 
 	if(playerMissile->collisionDetection(*m_alienManager.getAliens()))
 	{
@@ -172,11 +171,6 @@ void GameSource::updateBufferFrogger()
 }
 
 
-
-
-
-
-
 void GameSource::swapBuffers()
 {	
 	std::swap(m_frontBuffer, m_backBuffer);
@@ -203,14 +197,13 @@ void GameSource::updateScore()
 	std::cout << std::to_string(score);
 }
 
-void GameSource::removeLife()
+void GameSource::removeLife(int previousLives)
 {
 	Vector2 lifeToRemove = Vector2(m_livesDrawPosition.x + 6, m_livesDrawPosition.y);
-	lifeToRemove.x += (m_currentLives * 2) + m_currentLives - 1;
+	lifeToRemove.x += ((previousLives) * 2) + previousLives - 1;
 	m_gameWindow.setCursorPosition(lifeToRemove);
 	std::cout << "  ";
-
-	m_currentLives--;
+	m_player.setPosition(m_gameSize.x / 2, m_gameSize.y - 3);
 }
 
 

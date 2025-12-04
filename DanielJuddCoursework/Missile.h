@@ -28,6 +28,7 @@ public:
 	void setMissileActive(bool active) { m_isActive = active; }
 	bool collisionDetection(std::vector<Alien>& aliens);
 	bool collisionDetection(std::vector<Barrier>& barriers);
+	bool collisionDetection(GameObject& player);
 	//from https://www.w3schools.com/cpp/cpp_templates.asp
 	
 };

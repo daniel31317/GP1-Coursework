@@ -29,7 +29,7 @@ void Missile::update()
 		{
 			move(0, 1);
 		}
-		if (m_position.y < 0)
+		if (m_position.y > 80)
 		{
 			m_isActive = false;
 		}
@@ -45,13 +45,20 @@ void Missile::fireMissile(Vector2 pos)
 	}
 
 	m_position = pos;
-	m_position.y--;
 	m_isActive = true;
+
+	if (m_isPlayerMissile)
+	{
+		m_position.y--;
+	}
+	else
+	{
+		m_position.y++;
+	}
 }
 
 bool Missile::collisionDetection(std::vector<Alien>& aliens)
 {
-	//from https://www.geeksforgeeks.org/cpp/stdis_base_of-template-in-c-with-examples/
 	if (!m_isActive)
 	{
 		return false;
@@ -77,7 +84,6 @@ bool Missile::collisionDetection(std::vector<Alien>& aliens)
 
 bool Missile::collisionDetection(std::vector<Barrier>& barriers)
 {
-	//from https://www.geeksforgeeks.org/cpp/stdis_base_of-template-in-c-with-examples/
 	if (!m_isActive)
 	{
 		return false;
@@ -97,6 +103,20 @@ bool Missile::collisionDetection(std::vector<Barrier>& barriers)
 	}
 
 	return false;
+}
+
+bool Missile::collisionDetection(GameObject& player)
+{
+	if (!m_isActive)
+	{
+		return false;
+	}
+
+	if (player.getPosition() == m_position)
+	{
+		m_isActive = false;
+		return true;
+	}
 }
 
 

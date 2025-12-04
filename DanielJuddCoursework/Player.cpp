@@ -1,11 +1,11 @@
 #include "Player.h"
 Player::Player() : GameObject()
 {
-	m_missile = Missile(0,0,'!', true);
+	m_missile = Missile(0,0,'|', true);
 }
-Player::Player(int xPos, int yPos, char body, int health, bool isGameSpaceInvaders) : GameObject(xPos, yPos, body), m_lives(health), m_isSpaceInvaders(isGameSpaceInvaders)
+Player::Player(int xPos, int yPos, char body, bool isGameSpaceInvaders) : GameObject(xPos, yPos, body), m_isSpaceInvaders(isGameSpaceInvaders)
 {
-	m_missile = Missile(xPos, yPos, '!', true);
+	m_missile = Missile(xPos, yPos, '|', true);
 }
 
 

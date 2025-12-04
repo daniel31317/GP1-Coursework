@@ -26,10 +26,6 @@ private:
 	
 	const int NUMBER_OF_BARRIERS = 20;
 
-	const int m_maxLives = 4;
-	int m_currentLives = m_maxLives;
-
-
 	int score = 0;
 
 	GameWindow m_gameWindow;
@@ -85,7 +81,7 @@ public:
 	void drawGame();
 
 	void updateScore();
-	void removeLife();
+	void removeLife(int prevLives);
 	void drawGameUI();
 
 	void runMenu();
