@@ -7,7 +7,7 @@
 class AlienManager
 {
 private:
-	const Vector2 m_gameSize;
+	Vector2 m_gameSize;
 
 	std::vector<Alien> m_aliens;
 	
@@ -19,6 +19,7 @@ private:
 
 public:
 	AlienManager();
+	void setGameSize(const Vector2 gameSize) { m_gameSize = gameSize; }
 	void initialiseAliens();
 	void update(float deltaTime);
 	void updateBuffer(ScreenBuffer& buffer);

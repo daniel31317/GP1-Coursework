@@ -19,6 +19,8 @@ GameSource::GameSource()
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
 	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 
+	m_alienManager.setGameSize(m_gameSize);
+
 	m_lastTime = std::chrono::steady_clock::now();
 }
 GameSource::~GameSource()
