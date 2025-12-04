@@ -76,8 +76,11 @@ void GameSource::initialiseSpaceInvaders()
 	m_gameWindow.setCursorPosition(1, m_windowSize.y - 2);
 	std::cout << "SCORE : ";
 	score = 0;
-
 	updateScore();
+
+	m_gameWindow.setCursorPosition(m_livesDrawPosition);
+	std::cout << "LIVES : <3 <3 <3 <3";
+	m_currentLives = m_maxLives;
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
@@ -139,6 +142,7 @@ void GameSource::updateGameSpaceInvaders()
 				for (int j = 0; j < m_aliens.size(); j++)
 				{
 					m_aliens[j].switchDirection();
+					m_aliens[j].move(0, 1);
 				}
 
 				for (int j = 0; j < i; j++)
@@ -232,6 +236,15 @@ void GameSource::updateScore()
 	std::cout << std::to_string(m_deltaTime);
 }
 
+void GameSource::removeLife()
+{
+	Vector2 lifeToRemove = Vector2(m_livesDrawPosition.x + 6, m_livesDrawPosition.y);
+	lifeToRemove.x += (m_currentLives * 2) + m_currentLives - 1;
+	m_gameWindow.setCursorPosition(lifeToRemove);
+	std::cout << "  ";
+
+	m_currentLives--;
+}
 
 
 
@@ -361,5 +374,6 @@ void GameSource::calculateDeltaTime()
 	m_lastTime = currentTime;
 	m_deltaTime = deltaTime.count();
 }
+
 
 

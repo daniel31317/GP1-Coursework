@@ -21,12 +21,17 @@ private:
 	const Vector2 m_gameSize = Vector2(81, 31);
 	const int m_gameDrawOffset = 3;
 	const Vector2 m_scoreDrawPosition = Vector2(9, 33);
+	const Vector2 m_livesDrawPosition = Vector2(65, 33);
 	const int NUMBER_OF_ALIENS = 45;
 	const int NUMBER_OF_BARRIERS = 20;
 
 	const float m_maxAlienMoveDelay = 0.005f;
 	float m_currentAlienMoveDelay = m_maxAlienMoveDelay;
 	float m_currentAlienMoveDelta = 0;
+
+	const int m_maxLives = 4;
+	int m_currentLives = m_maxLives;
+
 
 	int score = 0;
 
@@ -82,6 +87,7 @@ public:
 	void drawGame();
 
 	void updateScore();
+	void removeLife();
 	void drawGameUI();
 
 	void runMenu();
