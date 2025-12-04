@@ -40,37 +40,24 @@ void GameSource::initialiseSpaceInvaders()
 {
 	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 3, '^', 10, true);
 
-	m_aliens.clear();
+	m_alienManager.initialiseAliens();
+
 	m_barriers.clear();
 
 	//reserve blocks of memory for the vectors
-	m_aliens.reserve(NUMBER_OF_ALIENS);
+	
 	m_barriers.reserve(NUMBER_OF_BARRIERS);
 
-	Vector2 alienPos = Vector2(20, 5);
-	int scoreForAlien = 50;
-
-	for (int i = 0; i < NUMBER_OF_ALIENS; i++)
-	{
-		if (i % 9 == 0 && i != 0)
-		{
-			alienPos.x = 20;
-			alienPos.y += 2;
-			scoreForAlien -= 10;
-		}
-		m_aliens.emplace_back(Alien(alienPos, 'A', scoreForAlien));
-		alienPos.x += 5;
-	}
-
-	alienPos = Vector2(10, m_gameSize.y - 8);
+	
+	Vector2 barrierPos = Vector2(10, m_gameSize.y - 8);
 
 	for (int i = 0; i < NUMBER_OF_BARRIERS; ++i) 
 	{
 		if (i % 5 == 0 && i != 0)
 		{
-			alienPos.x += 14;
+			barrierPos.x += 14;
 		}
-		m_barriers.emplace_back(Barrier(alienPos.x + i, alienPos.y, '=', false));
+		m_barriers.emplace_back(Barrier(barrierPos.x + i, barrierPos.y, '=', false));
 	}
 
 	//draw score
@@ -132,36 +119,13 @@ void GameSource::updateGameSpaceInvaders()
 {
 	m_player.update();
 
-	m_currentAlienMoveDelta += m_deltaTime;
-
-	if (m_currentAlienMoveDelta >= m_currentAlienMoveDelay)
-	{
-		for (int i = 0; i < m_aliens.size(); i++)
-		{
-			if (m_aliens[i].moveAlien(m_gameSize))
-			{
-				for (int j = 0; j < m_aliens.size(); j++)
-				{
-					m_aliens[j].switchDirection();
-					m_aliens[j].move(0, 1);
-				}
-
-				for (int j = 0; j < i; j++)
-				{
-					m_aliens[j].moveAlien(m_gameSize);
-				}
-
-				break;
-			}		
-		}
-		m_currentAlienMoveDelta = 0;
-	}
+	m_alienManager.update(m_deltaTime);
 
 	Missile* playerMissile = m_player.getMissile();
 
-	if(playerMissile->collisionDetection(m_aliens))
+	if(playerMissile->collisionDetection(*m_alienManager.getAliens()))
 	{
-		m_currentAlienMoveDelay -= 0.02f;
+		m_alienManager.reduceDelay();
 		score += playerMissile->getAlienHitScore();
 		updateScore();
 	}
@@ -173,10 +137,7 @@ void GameSource::updateBufferSpaceInvaders()
 {
 	m_backBuffer->setGameObjectAtPos(m_player);
 
-	for (int i = 0; i < m_aliens.size(); i++)
-	{
-		m_backBuffer->setGameObjectAtPos(m_aliens[i]);
-	}
+	m_alienManager.updateBuffer(*m_backBuffer);
 
 	for (int i = 0; i < m_barriers.size(); i++)
 	{

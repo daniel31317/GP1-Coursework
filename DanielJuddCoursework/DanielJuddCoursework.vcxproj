@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Alien.h" />
+    <ClInclude Include="AlienManager.h" />
     <ClInclude Include="Barrier.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="GameObject.h" />
@@ -141,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Alien.cpp" />
+    <ClCompile Include="AlienManager.cpp" />
     <ClCompile Include="Barrier.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="GameObject.cpp" />

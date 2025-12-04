@@ -45,6 +45,9 @@
     <ClInclude Include="Barrier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AlienManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameSource.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Barrier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AlienManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

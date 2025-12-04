@@ -10,6 +10,7 @@
 #include <vector>
 #include <stdio.h>
 #include <chrono>
+#include "AlienManager.h"
 
 class GameSource
 {
@@ -22,12 +23,8 @@ private:
 	const int m_gameDrawOffset = 3;
 	const Vector2 m_scoreDrawPosition = Vector2(9, 33);
 	const Vector2 m_livesDrawPosition = Vector2(65, 33);
-	const int NUMBER_OF_ALIENS = 45;
+	
 	const int NUMBER_OF_BARRIERS = 20;
-
-	const float m_maxAlienMoveDelay = 1.5f;
-	float m_currentAlienMoveDelay = m_maxAlienMoveDelay;
-	float m_currentAlienMoveDelta = 0;
 
 	const int m_maxLives = 4;
 	int m_currentLives = m_maxLives;
@@ -39,11 +36,12 @@ private:
 
 	GameObject m_ground;
 	Player m_player;
+	AlienManager m_alienManager;
+
 
 	float m_deltaTime = 0;
 	std::chrono::steady_clock::time_point m_lastTime;
 
-	std::vector<Alien> m_aliens;
 	std::vector<Barrier> m_barriers;
 
 	std::unique_ptr<ScreenBuffer> m_frontBuffer;
