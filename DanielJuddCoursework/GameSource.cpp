@@ -102,138 +102,32 @@ void GameSource::createFroggerBarriers()
 {
 	m_barriers.clear();
 
-	int x = 10;
 	int y = m_gameSize.y - 8;
 
-	for (int i = 0; i < 20; ++i)
-	{
-		if (i % 5 == 0 && i != 0)
-		{
-			x += 15;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Yellow], false, true, 0.25f);
-	}
-
-	x = 10;
+	placeRowOfBarriers(5, 4, 10, 15, y, false, 0.25f, ColourCodes[Yellow]);
 	y--;
-
-	for (int i = 0; i < 20; ++i)
-	{
-		if (i % 5 == 0 && i != 0)
-		{
-			x += 15;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Blue], true, true, 0.25f);
-	}
-
-
-	x = 0;
+	placeRowOfBarriers(5, 4, 10, 15, y, true, 0.25f, ColourCodes[Blue]);
 	y--;
-
-	for (int i = 0; i < 30; ++i)
-	{
-		if (i % 3 == 0 && i != 0)
-		{
-			x += 5;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Gray], false, true, 0.125f);
-	}
-
-	x = 10;
+	placeRowOfBarriers(3, 10, 0, 5, y, false, 0.125f, ColourCodes[Gray]);
 	y--;
-
-	for (int i = 0; i < 30; ++i)
-	{
-		if (i % 10 == 0 && i != 0)
-		{
-			x += 16;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Pink], true, true, 0.5f);
-	}
-
-
-	x = 15;
+	placeRowOfBarriers(10, 3, 16, 15, y, true, 0.5f, ColourCodes[Pink]);
 	y--;
-
-	for (int i = 0; i < 20; ++i)
-	{
-		if (i % 5 == 0 && i != 0)
-		{
-			x += 15;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Red], false, true, 0.25f);
-	}
-
+	placeRowOfBarriers(5, 4, 15, 15, y, false, 0.25f, ColourCodes[Red]);
 
 	//second set of barriers
-
-	x = 10;
 	y -= 4;
-
-	for (int i = 0; i < 20; ++i)
-	{
-		if (i % 5 == 0 && i != 0)
-		{
-			x += 15;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[DarkPink], true, true, 0.25f);
-	}
-
-	x = 10;
+	placeRowOfBarriers(5, 4, 10, 15, y, true, 0.25f, ColourCodes[DarkPink]);
 	y--;
-
-	for (int i = 0; i < 20; ++i)
-	{
-		if (i % 5 == 0 && i != 0)
-		{
-			x += 15;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Cyan], false, true, 0.25f);
-	}
-
-
-	x = 0;
+	placeRowOfBarriers(5, 4, 10, 15, y, false, 0.25f, ColourCodes[Cyan]);
 	y--;
-
-	for (int i = 0; i < 30; ++i)
-	{
-		if (i % 3 == 0 && i != 0)
-		{
-			x += 5;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Green], true, true, 0.125f);
-	}
-
-	x = 10;
+	placeRowOfBarriers(3, 10, 0, 5, y, true, 0.125f, ColourCodes[Green]);
 	y--;
-
-	for (int i = 0; i < 30; ++i)
-	{
-		if (i % 10 == 0 && i != 0)
-		{
-			x += 16;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[White], false, true, 0.5f);
-	}
-
-
-	x = 15;
+	placeRowOfBarriers(10, 3, 16, 15, y, false, 0.5f, ColourCodes[White]);
 	y--;
-
-	for (int i = 0; i < 20; ++i)
-	{
-		if (i % 5 == 0 && i != 0)
-		{
-			x += 15;
-		}
-		m_barriers.emplace_back(i + x, y, '=', ColourCodes[DarkRed], true, true, 0.25f);
-	}
-
-
+	placeRowOfBarriers(5, 4, 15, 15, y, true, 0.25f, ColourCodes[DarkRed]);
 
 	//third set of barriers
 	y -= 4;
-
 	placeRowOfBarriersWithWater(5, 15, y, false, 0.25f);
 	y--;
 	placeRowOfBarriersWithWater(6, 13, y, true, 0.25f);
@@ -262,6 +156,19 @@ void GameSource::placeRowOfBarriersWithWater(int barrierSize, int gapBetweenBarr
 		{
 			m_barriers.emplace_back(i, yPos, '~', ColourCodes[DarkBlue], movingRight, true, moveDelay);
 		}
+	}
+}
+
+void GameSource::placeRowOfBarriers(int barrierSize, int amount, int initialGap, int gapBetween, int yPos, bool movingRight, float moveDelay, WORD colour)
+{
+	int x = initialGap;
+	for (int i = 0; i < amount * barrierSize; i++)
+	{
+		if (i % barrierSize == 0 && i != 0)
+		{
+			x += gapBetween;
+		}
+		m_barriers.emplace_back(i + x, yPos, '=', colour, movingRight, true, moveDelay);
 	}
 }
 

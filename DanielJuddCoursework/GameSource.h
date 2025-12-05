@@ -75,6 +75,7 @@ public:
 
 	void createFroggerBarriers();
 	void placeRowOfBarriersWithWater(int barrierSize,int gapBetweenBarriers, int yPos, bool movingRight, float moveDelay);
+	void placeRowOfBarriers(int barrierSize,int amount, int initialGap, int gapBetween, int yPos, bool movingRight, float moveDelay, WORD colour);
 	
 	void runGame();
 
