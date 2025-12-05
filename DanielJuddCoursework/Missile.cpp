@@ -77,7 +77,7 @@ bool Missile::collisionDetection(std::vector<Alien>& aliens)
 
 	for (int i = 0; i < aliens.size(); i++)
 	{
-		if (aliens[i].getPosition() == m_position)
+		if (isColliding(aliens[i]))
 		{
 			m_lastAlienHitScore = aliens[i].getScoreForKill();
 			//swap that element to with the back then pop it 
@@ -102,7 +102,7 @@ bool Missile::collisionDetection(std::vector<Barrier>& barriers)
 
 	for (int i = 0; i < barriers.size(); i++)
 	{
-		if (barriers[i].getPosition() == m_position)
+		if (isColliding(barriers[i]))
 		{
 			barriers[i].damageBarrier();
 			if (barriers[i].getBarrierHealth() == 0)
@@ -127,7 +127,7 @@ bool Missile::collisionDetection(GameObject& gameObject)
 		return false;
 	}
 
-	if (gameObject.getPosition() == m_position)
+	if (isColliding(gameObject))
 	{
 		m_isActive = false;
 		return true;

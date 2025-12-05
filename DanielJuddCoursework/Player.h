@@ -5,12 +5,18 @@
 class Player : public GameObject
 {
 	private:
+		//both
 		int m_lives = 4;
-		Missile m_missile;
 		bool m_isSpaceInvaders = true;
-
 		const float m_moveDelay = 0.05f;
 		float m_moveDelta = 0.0f;
+
+		//space invaders
+		Missile m_missile;
+		
+		//frogger
+		int highestYPosition = 0;
+		
 	public:
 		using GameObject::GameObject;
 		Player();
@@ -22,6 +28,8 @@ class Player : public GameObject
 		void loseLife() { m_lives--; }
 		int getPlayerLives() const { return m_lives; }
 		void setPlayerLives(int health) { m_lives = health; }
+		int getHighestYPosition() const { return highestYPosition; }
+		void setHighestYPosition(int yPos) { highestYPosition = yPos; }
 		Missile* getMissile() { return &m_missile; }
 };
 

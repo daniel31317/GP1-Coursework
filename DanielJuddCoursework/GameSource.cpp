@@ -40,7 +40,9 @@ void GameSource::runGame()
 
 void GameSource::initialiseSpaceInvaders()
 {
-	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 3, '^', ColourCodes[Cyan], true);
+	m_isSpaceInvaders = true;
+
+	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 3, '^', ColourCodes[Cyan], m_isSpaceInvaders);
 
 	m_alienManager.initialiseAliens();
 
@@ -54,7 +56,7 @@ void GameSource::initialiseSpaceInvaders()
 		{
 			barrierPos.x += 14;
 		}
-		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '#', ColourCodes[Yellow], false);
+		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '#', ColourCodes[Yellow]);
 	}
 
 	m_alienWinPositionY = barrierPos.y + 1;
@@ -69,38 +71,198 @@ void GameSource::initialiseSpaceInvaders()
 		m_gameWindow.drawWordToScreen(m_livesDrawPosition, "LIVES : <3 <3 <3 <3", ColourCodes[Red]);
 	}
 	
+	drawGameUI();
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
 	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 
 	m_currentState = &GameSource::gameLoop;
-
-	m_keepScore = false;
 }
 
 void GameSource::initialiseFrogger()
 {
-	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 3, '^', ColourCodes[Green], false);
+	m_isSpaceInvaders = false;
 
-	m_barriers.clear();	
+	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 4, '^', ColourCodes[Green], m_isSpaceInvaders);
 
-	int x = 10;
+	m_player->setHighestYPosition(m_player->getPosition().y);
 
-	for (int i = 0; i < NUMBER_OF_BARRIERS; ++i)
-	{
-		if (i % 5 == 0 && i != 0)
-		{
-			x += 14;
-		}
-		m_barriers.emplace_back(i + x, m_gameSize.y - 8, '=', ColourCodes[Yellow], false);
-	}
+	createFroggerBarriers();
+	drawGameUI();
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameFrogger;
 	m_updateBuffer = &GameSource::updateBufferFrogger;
 
 	m_currentState = &GameSource::gameLoop;
+}
+
+void GameSource::createFroggerBarriers()
+{
+	m_barriers.clear();
+
+	int x = 10;
+	int y = m_gameSize.y - 8;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (i % 5 == 0 && i != 0)
+		{
+			x += 15;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Yellow], false, true, 0.25f);
+	}
+
+	x = 10;
+	y--;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (i % 5 == 0 && i != 0)
+		{
+			x += 15;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Blue], true, true, 0.25f);
+	}
+
+
+	x = 0;
+	y--;
+
+	for (int i = 0; i < 30; ++i)
+	{
+		if (i % 3 == 0 && i != 0)
+		{
+			x += 5;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Gray], false, true, 0.125f);
+	}
+
+	x = 10;
+	y--;
+
+	for (int i = 0; i < 30; ++i)
+	{
+		if (i % 10 == 0 && i != 0)
+		{
+			x += 16;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Pink], true, true, 0.5f);
+	}
+
+
+	x = 15;
+	y--;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (i % 5 == 0 && i != 0)
+		{
+			x += 15;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Red], false, true, 0.25f);
+	}
+
+
+	//second set of barriers
+
+	x = 10;
+	y -= 4;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (i % 5 == 0 && i != 0)
+		{
+			x += 15;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[DarkPink], true, true, 0.25f);
+	}
+
+	x = 10;
+	y--;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (i % 5 == 0 && i != 0)
+		{
+			x += 15;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Cyan], false, true, 0.25f);
+	}
+
+
+	x = 0;
+	y--;
+
+	for (int i = 0; i < 30; ++i)
+	{
+		if (i % 3 == 0 && i != 0)
+		{
+			x += 5;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[Green], true, true, 0.125f);
+	}
+
+	x = 10;
+	y--;
+
+	for (int i = 0; i < 30; ++i)
+	{
+		if (i % 10 == 0 && i != 0)
+		{
+			x += 16;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[White], false, true, 0.5f);
+	}
+
+
+	x = 15;
+	y--;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (i % 5 == 0 && i != 0)
+		{
+			x += 15;
+		}
+		m_barriers.emplace_back(i + x, y, '=', ColourCodes[DarkRed], true, true, 0.25f);
+	}
+
+
+
+	//third set of barriers
+	y -= 4;
+
+	placeRowOfBarriersWithWater(5, 15, y, false, 0.25f);
+	y--;
+	placeRowOfBarriersWithWater(6, 13, y, true, 0.25f);
+	y--;
+	placeRowOfBarriersWithWater(3, 5, y, false, 0.125f);
+	y--;
+	placeRowOfBarriersWithWater(8, 10, y, true, 0.5f);
+	y--;
+	placeRowOfBarriersWithWater(5, 10, y, false, 0.3f);
+
+}
+
+void GameSource::placeRowOfBarriersWithWater(int barrierSize, int gapBetweenBarriers, int yPos, bool movingRight, float moveDelay)
+{
+	for (int i = 0; i < m_gameSize.x; i++)
+	{
+		if (i % (barrierSize + gapBetweenBarriers) == 0 && i != 0)
+		{
+			for (int j = 0; j < barrierSize; j++)
+			{
+				m_barriers.emplace_back(i + j, yPos, '=', ColourCodes[DarkYellow], movingRight, false, moveDelay);
+			}
+			i += barrierSize - 1;
+		}
+		else
+		{
+			m_barriers.emplace_back(i, yPos, '~', ColourCodes[DarkBlue], movingRight, true, moveDelay);
+		}
+	}
 }
 
 
@@ -186,20 +348,41 @@ void GameSource::updateBufferSpaceInvaders()
 
 void GameSource::updateGameFrogger()
 {
+	if(m_player->getPosition().y < m_player->getHighestYPosition())
+	{
+		m_player->setHighestYPosition(m_player->getPosition().y);
+		m_score += 10;
+		updateScore();
+	}
+
+
+
+	int livesBefore = m_player->getPlayerLives();
+
 	for (int i = 0; i < m_barriers.size(); i++)
 	{
 		m_barriers[i].update(m_deltaTime);
+		m_barriers[i].playerCollision(*m_player);
+	}
+
+	if (livesBefore != m_player->getPlayerLives())
+	{
+		removeLife(livesBefore);
+		if (m_player->getPlayerLives() == 0)
+		{
+			m_currentState = &GameSource::runRetryMenu;
+		}
 	}
 }
 
 void GameSource::updateBufferFrogger()
 {
-	m_backBuffer->setGameObjectAtPos(*m_player);
-
 	for (int i = 0; i < m_barriers.size(); i++)
 	{
 		m_backBuffer->setGameObjectAtPos(m_barriers[i]);
 	}
+
+	m_backBuffer->setGameObjectAtPos(*m_player);
 }
 
 
@@ -243,6 +426,17 @@ void GameSource::drawGameUI()
 	m_GameBorder->drawButton(m_gameWindow);
 	m_gameWindow.setCursorPosition(2, 1);
 	std::cout << "<-- ESC";
+
+	if (!m_keepScore)
+	{
+		m_gameWindow.drawWordToScreen(Vector2(2, m_windowSize.y - 2), "SCORE : ", ColourCodes[Green]);
+		m_score = 0;
+		updateScore();
+
+		m_gameWindow.drawWordToScreen(m_livesDrawPosition, "LIVES : <3 <3 <3 <3", ColourCodes[Red]);
+	}
+
+	m_keepScore = false;
 
 }
 
@@ -350,7 +544,7 @@ void GameSource::runRetryMenu()
 			{
 				if (m_retryBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
 				{
-					m_currentState = &GameSource::initialiseSpaceInvaders;
+					m_currentState = m_isSpaceInvaders ? &GameSource::initialiseSpaceInvaders : &GameSource::initialiseFrogger;				
 					drawGameUI();
 					madeChoice = true;
 				}

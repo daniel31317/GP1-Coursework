@@ -30,6 +30,8 @@ class GameObject
 
 		void setBody(char body) { this->m_body = body; }
 		char getBody() const { return m_body; }
+
+		bool isColliding(const GameObject& other) const { return m_position == other.m_position; }
 		
 };
 

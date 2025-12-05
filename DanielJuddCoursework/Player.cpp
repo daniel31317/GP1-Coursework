@@ -44,6 +44,14 @@ void Player::processInput(float deltaTime)
 	//Frogger Input
 	else
 	{
+		m_moveDelta += deltaTime;
+
+		if (m_moveDelta < m_moveDelay)
+		{
+			return;
+		}
+
+		m_moveDelta = 0;
 		//W is pressed
 		if (GetKeyState(87) & 0x8000 && m_position.y > 0)
 		{
@@ -51,7 +59,7 @@ void Player::processInput(float deltaTime)
 			m_body = '^';
 		}
 		//S is pressed
-		else if (GetKeyState(83) & 0x8000 && m_position.y < 29)
+		else if (GetKeyState(83) & 0x8000 && m_position.y < 28)
 		{
 			move(0, 1);
 			m_body = 'v';

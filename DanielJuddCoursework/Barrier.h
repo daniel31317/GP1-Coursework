@@ -1,20 +1,32 @@
 #pragma once
 #include "GameObject.h"
+
+class Player;
+
 class Barrier : public GameObject
 {
 private :
-	bool m_movingRight = true;
+	//space invader stuff
 	char m_barrierStates[4] = { ' ', '-', '+', '#' };
 	int m_barrierHealth = 3;
+
+	//frogger stuff
+	bool m_movingRight = true;
+	bool m_isHarmful = true;
+	float m_moveDelay = 0.0f;
+	float m_moveDelta = 0.0f;
+	Player* m_playerRef = nullptr;
+
 public:
 
 	Barrier();
-	Barrier(int xPos, int yPos, char body, WORD colour, bool isMovingright);
-	Barrier(Vector2 pos, char body, WORD colour, bool isMovingright);
+	Barrier(int xPos, int yPos, char body, WORD colour);
+	Barrier(int xPos, int yPos, char body, WORD colour, bool isMovingright, bool isHarmful, float maxMoveDelay);
+	Barrier(Vector2 pos, char body, WORD colour, bool isMovingright, bool isHarmful, float maxMoveDelay);
 	void damageBarrier();
 	int getBarrierHealth() const { return m_barrierHealth; }
 	bool isActive() const { return m_barrierHealth == 0; }
 	virtual void update(float deltaTime) override;
-
+	void playerCollision(Player& player);
 };
 

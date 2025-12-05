@@ -20,6 +20,8 @@ private:
 
 	bool m_runLoop = true;
 
+	bool m_isSpaceInvaders = true;
+
 	const Vector2 m_windowSize = Vector2(85, 35);
 	const Vector2 m_gameSize = Vector2(81, 31);
 	const int m_gameDrawOffset = 3;
@@ -70,6 +72,9 @@ public:
 	GameSource();
 	void initialiseSpaceInvaders();
 	void initialiseFrogger();
+
+	void createFroggerBarriers();
+	void placeRowOfBarriersWithWater(int barrierSize,int gapBetweenBarriers, int yPos, bool movingRight, float moveDelay);
 	
 	void runGame();
 
