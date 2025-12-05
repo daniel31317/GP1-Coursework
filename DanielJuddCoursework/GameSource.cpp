@@ -16,7 +16,7 @@ GameSource::GameSource()
 
 
 	m_windowBorder = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
-	m_GameBorder = std::make_unique<Button>(m_gameSize.x, m_gameSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
+	m_GameBorder = std::make_unique<Button>(m_gameSize.x + 2, m_gameSize.y + 2, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
 
 	m_currentState = &GameSource::runMenu;
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
@@ -48,23 +48,14 @@ void GameSource::initialiseSpaceInvaders()
 
 	m_barriers.clear();
 	
-	Vector2 barrierPos = Vector2(10, m_gameSize.y - 8);
+	placeRowOfBarriers(5, 4, 10, 14, m_gameSize.y - 6, false, 0.0f, ColourCodes[Yellow]);
 
-	for (int i = 0; i < NUMBER_OF_BARRIERS; ++i) 
-	{
-		if (i % 5 == 0 && i != 0)
-		{
-			barrierPos.x += 14;
-		}
-		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '#', ColourCodes[Yellow]);
-	}
-
-	m_alienWinPositionY = barrierPos.y + 1;
+	m_alienWinPositionY = m_gameSize.y - 5;
 
 	//draw score
 	if (!m_keepScore)
 	{
-		m_gameWindow.drawWordToScreen(Vector2(2, m_windowSize.y - 2), "SCORE : ", ColourCodes[Green]);
+		m_gameWindow.drawWordToScreen(Vector2(2, m_windowSize.y), "SCORE : ", ColourCodes[Green]);
 		m_score = 0;
 		updateScore();
 
@@ -72,6 +63,8 @@ void GameSource::initialiseSpaceInvaders()
 	}
 	
 	drawGameUI();
+
+	m_froggerWinObjects.clear();
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
@@ -84,12 +77,16 @@ void GameSource::initialiseFrogger()
 {
 	m_isSpaceInvaders = false;
 
-	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 4, '^', ColourCodes[Green], m_isSpaceInvaders);
+	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 2, '^', ColourCodes[Green], m_isSpaceInvaders);
 
 	m_player->setHighestYPosition(m_player->getPosition().y);
 
 	createFroggerBarriers();
 	drawGameUI();
+
+	m_remianingFroggerWinPointsX = m_froggerWinPointsX;
+
+	m_froggerWinObjects.clear();
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameFrogger;
@@ -102,13 +99,14 @@ void GameSource::createFroggerBarriers()
 {
 	m_barriers.clear();
 
-	int y = m_gameSize.y - 8;
+	int y = m_gameSize.y - 6;
 
+	//first set of barriers
 	placeRowOfBarriers(5, 4, 10, 15, y, false, 0.25f, ColourCodes[Yellow]);
 	y--;
 	placeRowOfBarriers(5, 4, 10, 15, y, true, 0.25f, ColourCodes[Blue]);
 	y--;
-	placeRowOfBarriers(3, 10, 0, 5, y, false, 0.125f, ColourCodes[Gray]);
+	placeRowOfBarriers(3, 10, 0, 5, y, false, 0.125f, ColourCodes[Grey]);
 	y--;
 	placeRowOfBarriers(10, 3, 16, 15, y, true, 0.5f, ColourCodes[Pink]);
 	y--;
@@ -137,6 +135,42 @@ void GameSource::createFroggerBarriers()
 	placeRowOfBarriersWithWater(8, 10, y, true, 0.5f);
 	y--;
 	placeRowOfBarriersWithWater(5, 10, y, false, 0.3f);
+	y--;
+
+	m_froggerTopBorder.clear();
+
+	for (int x = 0; x < m_gameSize.x; x++)
+	{
+		bool isWinPoint = false;
+		for(int i = 0; i < m_froggerWinPointsX.size(); i++)
+		{
+			if(x == m_froggerWinPointsX[i])
+			{
+				isWinPoint = true;
+				break;
+			}
+		}
+
+		if(isWinPoint)
+		{
+			m_froggerTopBorder.pop_back();
+			m_froggerTopBorder.emplace_back(x - 2, y, '-', ColourCodes[White], true, true, 0.0f);
+			m_froggerTopBorder.emplace_back(x - 2, y - 1, '-', ColourCodes[White], true, true, 0.0f);
+			m_froggerTopBorder.emplace_back(x - 2, y - 2, '-', ColourCodes[White], true, true, 0.0f);
+			m_froggerTopBorder.emplace_back(x - 1, y - 2, '-', ColourCodes[White], true, true, 0.0f);
+			m_froggerTopBorder.emplace_back(x, y - 2, '-', ColourCodes[White], true, true, 0.0f);
+			m_froggerTopBorder.emplace_back(x + 1, y - 2, '-', ColourCodes[White], true, true, 0.0f);
+			m_froggerTopBorder.emplace_back(x + 2, y - 2, '-', ColourCodes[White], true, true, 0.0f);
+			m_froggerTopBorder.emplace_back(x + 2, y - 1, '-', ColourCodes[White], true, true, 0.0f);
+			m_froggerTopBorder.emplace_back(x + 2, y, '-', ColourCodes[White], true, true, 0.0f);
+			x += 2;
+		}
+		else
+		{
+			m_froggerTopBorder.emplace_back(x, y, '-', ColourCodes[White], true, true, 0.0f);
+		}
+	}
+
 
 }
 
@@ -272,6 +306,13 @@ void GameSource::updateGameFrogger()
 		m_barriers[i].playerCollision(*m_player);
 	}
 
+	for (int i = 0; i < m_froggerTopBorder.size(); i++)
+	{
+		m_froggerTopBorder[i].playerCollision(*m_player);
+	}
+
+	checkFroggerWinConditions();
+
 	if (livesBefore != m_player->getPlayerLives())
 	{
 		removeLife(livesBefore);
@@ -289,7 +330,17 @@ void GameSource::updateBufferFrogger()
 		m_backBuffer->setGameObjectAtPos(m_barriers[i]);
 	}
 
+	for (int i = 0; i < m_froggerTopBorder.size(); i++)
+	{
+		m_backBuffer->setGameObjectAtPos(m_froggerTopBorder[i]);
+	}
+
 	m_backBuffer->setGameObjectAtPos(*m_player);
+
+	for(int i = 0; i < m_froggerWinObjects.size(); i++)
+	{
+		m_backBuffer->setGameObjectAtPos(m_froggerWinObjects[i]);
+	}
 }
 
 
@@ -302,9 +353,9 @@ void GameSource::swapBuffers()
 
 void GameSource::drawGame()
 {
-	for (int y = 0; y < m_gameSize.y - 2; y++)
+	for (int y = 0; y < m_gameSize.y; y++)
 	{
-		for (int x = 0; x < m_gameSize.x - 2; x++)
+		for (int x = 0; x < m_gameSize.x; x++)
 		{
 			m_gameWindow.drawCharToScreen(Vector2(x + m_gameDrawOffset, y + m_gameDrawOffset), m_frontBuffer->getBufferCell(x, y));
 		}
@@ -323,7 +374,7 @@ void GameSource::removeLife(int previousLives)
 	lifeToRemove.x += ((previousLives) * 2) + previousLives - 1;
 	m_gameWindow.setCursorPosition(lifeToRemove);
 	std::cout << "  ";
-	m_player->setPosition(m_gameSize.x / 2, m_gameSize.y - 3);
+	m_player->setPosition(m_gameSize.x / 2, m_gameSize.y - 1);
 }
 
 
@@ -345,6 +396,45 @@ void GameSource::drawGameUI()
 
 	m_keepScore = false;
 
+}
+
+void GameSource::checkFroggerWinConditions()
+{
+	Vector2 playerPos = m_player->getPosition();
+
+	if(playerPos.y != 2)
+	{
+		return;
+	}
+
+	for (int i = 0; i < m_froggerWinPointsX.size(); i++)
+	{
+		if (m_player->getPosition().x >= m_froggerWinPointsX[i] - 1 && m_player->getPosition().x <= m_froggerWinPointsX[i] + 1)
+		{
+			if(std::find(m_remianingFroggerWinPointsX.begin(), m_remianingFroggerWinPointsX.end(), m_froggerWinPointsX[i]) == m_remianingFroggerWinPointsX.end())
+			{
+				m_player->loseLife();	
+				return;
+			}
+			m_score += 250;
+			updateScore();
+
+			auto it = std::remove(m_remianingFroggerWinPointsX.begin(), m_remianingFroggerWinPointsX.end(), m_froggerWinPointsX[i]);
+
+			m_remianingFroggerWinPointsX.erase(it, m_remianingFroggerWinPointsX.end());
+
+			if(m_remianingFroggerWinPointsX.size() == 0)
+			{
+				m_keepScore = true;
+				m_currentState = &GameSource::initialiseFrogger;
+			}
+
+			m_froggerWinObjects.emplace_back(m_froggerWinPointsX[i], 1, 'v', ColourCodes[Green]);
+			m_player->setPosition(m_gameSize.x / 2, m_gameSize.y - 2);
+			m_player->setHighestYPosition(m_player->getPosition().y);
+			return;
+		}
+	}
 }
 
 void GameSource::runMenu()

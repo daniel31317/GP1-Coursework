@@ -23,10 +23,19 @@ private:
 	bool m_isSpaceInvaders = true;
 
 	const Vector2 m_windowSize = Vector2(85, 35);
-	const Vector2 m_gameSize = Vector2(81, 31);
+	const Vector2 m_gameSize = Vector2(79, 29);
 	const int m_gameDrawOffset = 3;
 	const Vector2 m_scoreDrawPosition = Vector2(10, 33);
 	const Vector2 m_livesDrawPosition = Vector2(64, 33);
+
+	const std::vector<int> m_froggerWinPointsX = 
+	{
+		9, 24, 39, 54, 69
+	};
+
+	std::vector<int> m_remianingFroggerWinPointsX = m_froggerWinPointsX;
+
+	std::vector<GameObject> m_froggerWinObjects;
 	
 	const int NUMBER_OF_BARRIERS = 20;
 
@@ -46,6 +55,7 @@ private:
 	std::chrono::steady_clock::time_point m_lastTime;
 
 	std::vector<Barrier> m_barriers;
+	std::vector<Barrier> m_froggerTopBorder;
 
 	std::unique_ptr<ScreenBuffer> m_frontBuffer;
 	std::unique_ptr<ScreenBuffer> m_backBuffer;
@@ -95,6 +105,8 @@ public:
 	void updateScore() const;
 	void removeLife(int prevLives);
 	void drawGameUI();
+
+	void checkFroggerWinConditions();
 
 	void runMenu();
 

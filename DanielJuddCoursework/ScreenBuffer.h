@@ -9,6 +9,9 @@ struct BufferCell
 {
     char character = ' ';
     WORD colour = ColourCodes[White];
+
+	BufferCell() : character(' '), colour(ColourCodes[White]) {}
+	BufferCell(char c, WORD colour) : character(c), colour(colour) {}
 };
 
 struct ScreenBuffer 

@@ -71,7 +71,7 @@ void Player::processInput(float deltaTime)
 			m_body = '<';
 		}
 		//D is pressed
-		else if (GetKeyState(68) & 0x8000 && m_position.x < 79)
+		else if (GetKeyState(68) & 0x8000 && m_position.x < 78)
 		{
 			move(1, 0);
 			m_body = '>';
