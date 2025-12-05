@@ -32,7 +32,7 @@ void GameSource::runGame()
 {
 	while (m_runLoop)
 	{
-		calculateDeltaTime();
+		calculateDeltaTime();	
 		(this->*m_currentState)();
 	}
 }
@@ -40,7 +40,7 @@ void GameSource::runGame()
 
 void GameSource::initialiseSpaceInvaders()
 {
-	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 3, '^', true);
+	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 3, '^', ColourCodes[Cyan], true);
 
 	m_alienManager.initialiseAliens();
 
@@ -54,19 +54,17 @@ void GameSource::initialiseSpaceInvaders()
 		{
 			barrierPos.x += 14;
 		}
-		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '#', false);
+		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '#', ColourCodes[Yellow], false);
 	}
 
 	//draw score
 	if (!m_keepScore)
 	{
-		m_gameWindow.setCursorPosition(1, m_windowSize.y - 2);
-		std::cout << "SCORE : ";
+		m_gameWindow.drawWordToScreen(Vector2(2, m_windowSize.y - 2), "SCORE : ", ColourCodes[Green]);
 		m_score = 0;
 		updateScore();
 
-		m_gameWindow.setCursorPosition(m_livesDrawPosition);
-		std::cout << "LIVES : <3 <3 <3 <3";
+		m_gameWindow.drawWordToScreen(m_livesDrawPosition, "LIVES : <3 <3 <3 <3", ColourCodes[Red]);
 	}
 	
 
@@ -77,13 +75,11 @@ void GameSource::initialiseSpaceInvaders()
 	m_currentState = &GameSource::gameLoop;
 
 	m_keepScore = false;
-
-	m_player.setPlayerLives(1);
 }
 
 void GameSource::initialiseFrogger()
 {
-	m_player = Player(m_gameSize.x / 2, m_gameSize.y - 3, '^', false);
+	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 3, '^', ColourCodes[Green], false);
 
 	m_barriers.clear();	
 
@@ -95,7 +91,7 @@ void GameSource::initialiseFrogger()
 		{
 			x += 14;
 		}
-		m_barriers.emplace_back(i + x, m_gameSize.y - 8, '=', false);
+		m_barriers.emplace_back(i + x, m_gameSize.y - 8, '=', ColourCodes[Yellow], false);
 	}
 
 	//set function pointers for game loop for specific game
@@ -108,7 +104,7 @@ void GameSource::initialiseFrogger()
 
 void GameSource::processInput()
 {
-	m_player.processInput();
+	m_player->processInput(m_deltaTime);
 
 	//if esc is pressed
 	if (GetKeyState(27) & 0x8000)
@@ -120,20 +116,20 @@ void GameSource::processInput()
 
 void GameSource::updateGameSpaceInvaders()
 {
-	m_player.update();
+	m_player->update(m_deltaTime);
 
-	int livesBefore = m_player.getPlayerLives();
-	m_alienManager.update(m_deltaTime, m_player, m_barriers);
-	if (livesBefore != m_player.getPlayerLives())
+	int livesBefore = m_player->getPlayerLives();
+	m_alienManager.update(m_deltaTime, *m_player, m_barriers);
+	if (livesBefore != m_player->getPlayerLives())
 	{
 		removeLife(livesBefore);
-		if (m_player.getPlayerLives() == 0)
+		if (m_player->getPlayerLives() == 0)
 		{
 			m_currentState = &GameSource::runRetryMenu;
 		}
 	}
 
- 	Missile* playerMissile = m_player.getMissile();
+ 	Missile* playerMissile = m_player->getMissile();
 
 	if(playerMissile->collisionDetection(*m_alienManager.getAliens()))
 	{
@@ -147,12 +143,24 @@ void GameSource::updateGameSpaceInvaders()
 		}
 	}
 
+	SpecialAlien* specialAlien = m_alienManager.getSpecialAlien();
+
+	if(specialAlien->isActive())
+	{
+		if (playerMissile->collisionDetection(*specialAlien))
+		{
+			m_score += specialAlien->getScoreForKill();
+			specialAlien->kill();
+			updateScore();
+		}
+	}
+
 	playerMissile->collisionDetection(m_barriers);
 }
 
 void GameSource::updateBufferSpaceInvaders()
 {
-	m_backBuffer->setGameObjectAtPos(m_player);
+	m_backBuffer->setGameObjectAtPos(*m_player);
 
 	m_alienManager.updateBuffer(*m_backBuffer);
 
@@ -161,9 +169,9 @@ void GameSource::updateBufferSpaceInvaders()
 		m_backBuffer->setGameObjectAtPos(m_barriers[i]);
 	}
 
-	if (m_player.getMissile()->isMissileActive())
+	if (m_player->getMissile()->isMissileActive())
 	{
-		m_backBuffer->setGameObjectAtPos(*m_player.getMissile());
+		m_backBuffer->setGameObjectAtPos(*m_player->getMissile());
 	}
 }
 
@@ -172,13 +180,13 @@ void GameSource::updateGameFrogger()
 {
 	for (int i = 0; i < m_barriers.size(); i++)
 	{
-		m_barriers[i].update();
+		m_barriers[i].update(m_deltaTime);
 	}
 }
 
 void GameSource::updateBufferFrogger()
 {
-	m_backBuffer->setGameObjectAtPos(m_player);
+	m_backBuffer->setGameObjectAtPos(*m_player);
 
 	for (int i = 0; i < m_barriers.size(); i++)
 	{
@@ -200,17 +208,15 @@ void GameSource::drawGame()
 	{
 		for (int x = 0; x < m_gameSize.x - 2; x++)
 		{
-			m_gameWindow.setCursorPosition(x + m_gameDrawOffset, y + m_gameDrawOffset);
-			std::cout << m_frontBuffer->getChar(x, y);
+			m_gameWindow.drawCharToScreen(Vector2(x + m_gameDrawOffset, y + m_gameDrawOffset), m_frontBuffer->getBufferCell(x, y));
 		}
 	}
 }
 
 
-void GameSource::updateScore()
+void GameSource::updateScore() const
 {
-	m_gameWindow.setCursorPosition(m_scoreDrawPosition);
-	std::cout << std::to_string(m_score);
+	m_gameWindow.drawWordToScreen(m_scoreDrawPosition, std::to_string(m_score), ColourCodes[Green]);
 }
 
 void GameSource::removeLife(int previousLives)
@@ -219,7 +225,7 @@ void GameSource::removeLife(int previousLives)
 	lifeToRemove.x += ((previousLives) * 2) + previousLives - 1;
 	m_gameWindow.setCursorPosition(lifeToRemove);
 	std::cout << "  ";
-	m_player.setPosition(m_gameSize.x / 2, m_gameSize.y - 3);
+	m_player->setPosition(m_gameSize.x / 2, m_gameSize.y - 3);
 }
 
 
@@ -227,7 +233,7 @@ void GameSource::removeLife(int previousLives)
 void GameSource::drawGameUI()
 {
 	m_GameBorder->drawButton(m_gameWindow);
-	m_gameWindow.setCursorPosition(1, 1);
+	m_gameWindow.setCursorPosition(2, 1);
 	std::cout << "<-- ESC";
 
 }

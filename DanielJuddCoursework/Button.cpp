@@ -103,7 +103,7 @@ const char Button::getButtonDesignAtPosition(const int x, const int y, int& name
 }
 
 
-bool Button::buttonInput(const int x, const int y)
+bool Button::buttonInput(const int x, const int y) const
 {
 	if (x < m_drawPosition.x || x >= m_drawPosition.x + m_width || y < m_drawPosition.y || y >= m_drawPosition.y + m_height)
 	{

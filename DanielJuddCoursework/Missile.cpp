@@ -1,39 +1,50 @@
 #include "Missile.h"
 
-Missile::Missile(Vector2 pos, char body, bool playersMissile) : GameObject(pos, body), m_isPlayerMissile(playersMissile)
+Missile::Missile(Vector2 pos, char body, WORD colour, bool playersMissile) : GameObject(pos, body, colour), m_isPlayerMissile(playersMissile)
 {
 
 }
 
-Missile::Missile(int xPos, int yPos, char body, bool playersMissile) : GameObject(xPos, yPos, body), m_isPlayerMissile(playersMissile)
+Missile::Missile(int xPos, int yPos, char body, WORD colour, bool playersMissile) : GameObject(xPos, yPos, body, colour), m_isPlayerMissile(playersMissile)
 {
 
 }
 
-void Missile::update()
+void Missile::update(float deltaTime)
 {
-	if (m_isPlayerMissile)
+	if (!m_isActive)
 	{
-		if (m_isActive)
-		{
-			move(0, -1);
-		}
+		return;
+	}
+
+	m_currentMissileDelta += deltaTime;
+
+	if(m_currentMissileDelta < m_maxMissleDelay)
+	{
+		return;
+	}
+
+	m_currentMissileDelta = 0.0f;
+	if (m_isPlayerMissile)
+	{			
+		move(0, -1);
 		if (m_position.y < 0)
 		{
 			m_isActive = false;
 		}
 	}
+		
 	else
 	{
-		if (m_isActive)
-		{
-			move(0, 1);
-		}
+		move(0, 1);
 		if (m_position.y > 80)
 		{
 			m_isActive = false;
 		}
+		
 	}
+	
+	
 	
 }
 void Missile::fireMissile(Vector2 pos)
@@ -109,18 +120,20 @@ bool Missile::collisionDetection(std::vector<Barrier>& barriers)
 	return false;
 }
 
-bool Missile::collisionDetection(GameObject& player)
+bool Missile::collisionDetection(GameObject& gameObject)
 {
 	if (!m_isActive)
 	{
 		return false;
 	}
 
-	if (player.getPosition() == m_position)
+	if (gameObject.getPosition() == m_position)
 	{
 		m_isActive = false;
 		return true;
 	}
+
+	return false;
 }
 
 

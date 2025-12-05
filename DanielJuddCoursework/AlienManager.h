@@ -5,6 +5,8 @@
 #include "ScreenBuffer.h"
 #include "Missile.h"
 #include "Player.h"
+#include "SpecialAlien.h"
+
 
 class AlienManager
 {
@@ -13,6 +15,8 @@ private:
 
 	std::vector<Alien> m_aliens;
 	std::vector<Missile> m_missiles;
+
+	SpecialAlien m_specialAlien;	
 	
 	const int NUMBER_OF_ALIENS = 45;
 	const int NUMBER_OF_MISSILES = 5;
@@ -35,7 +39,8 @@ public:
 	void update(float deltaTime, Player& player, std::vector<Barrier>& barriers);
 	void updateBuffer(ScreenBuffer& buffer);
 	std::vector<Alien>* getAliens() { return &m_aliens; }
+	SpecialAlien* getSpecialAlien() { return &m_specialAlien; }
 	void reduceDelay();
-	int getNumberOfAliens() const { return m_aliens.size(); }
+	int getNumberOfAliens() { return (int)m_aliens.size(); }
 };
 

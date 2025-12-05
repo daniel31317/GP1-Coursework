@@ -1,34 +1,45 @@
 #include "Player.h"
-Player::Player() : GameObject()
+Player::Player() : GameObject(), m_missile(0, 0, '|', ColourCodes[Pink], true)
 {
-	m_missile = Missile(0,0,'|', true);
+	
 }
-Player::Player(int xPos, int yPos, char body, bool isGameSpaceInvaders) : GameObject(xPos, yPos, body), m_isSpaceInvaders(isGameSpaceInvaders)
+Player::Player(int xPos, int yPos, char body, WORD colour, bool isGameSpaceInvaders) : GameObject(xPos, yPos, body, colour), m_isSpaceInvaders(isGameSpaceInvaders), m_missile(xPos, yPos, '|', ColourCodes[Pink], true)
 {
-	m_missile = Missile(xPos, yPos, '|', true);
+	
 }
 
 
-void Player::processInput()
+void Player::processInput(float deltaTime)
 {
 	//Space invaders input
 	if (m_isSpaceInvaders)
 	{
-		//A is pressed
-		if (GetKeyState(65) & 0x8000 && m_position.x > 1)
-		{
-			move(-1, 0);
-		}
-		//D is pressed
-		else if (GetKeyState(68) & 0x8000 && m_position.x < 79)
-		{
-			move(1, 0);
-		}
 		//Space is pressed
 		if (GetKeyState(32) & 0x8000)
 		{
 			m_missile.fireMissile(m_position);
 		}
+
+		m_moveDelta += deltaTime;
+
+		if(m_moveDelta < m_moveDelay)
+		{
+			return;
+		}
+
+		m_moveDelta = 0;
+
+		//A is pressed
+		if (GetKeyState(65) & 0x8000 && m_position.x > 0)
+		{
+			move(-1, 0);
+		}
+		//D is pressed
+		else if (GetKeyState(68) & 0x8000 && m_position.x < 78)
+		{
+			move(1, 0);
+		}
+		
 	}
 	//Frogger Input
 	else
@@ -60,7 +71,7 @@ void Player::processInput()
 	}
 	
 }
-void Player::update()
+void Player::update(float deltaTime)
 {
-	m_missile.update();
+	m_missile.update(deltaTime);
 }

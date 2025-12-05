@@ -9,12 +9,12 @@ private :
 public:
 
 	Barrier();
-	Barrier(int xPos, int yPos, char body, bool isMovingright);
-	Barrier(Vector2 pos, char body, bool isMovingright);
+	Barrier(int xPos, int yPos, char body, WORD colour, bool isMovingright);
+	Barrier(Vector2 pos, char body, WORD colour, bool isMovingright);
 	void damageBarrier();
 	int getBarrierHealth() const { return m_barrierHealth; }
-	bool isActive() { return m_barrierHealth == 0; }
-	virtual void update() override;
+	bool isActive() const { return m_barrierHealth == 0; }
+	virtual void update(float deltaTime) override;
 
 };
 

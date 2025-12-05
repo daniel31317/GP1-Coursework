@@ -132,12 +132,14 @@
     <ClInclude Include="AlienManager.h" />
     <ClInclude Include="Barrier.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Colour.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSource.h" />
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="Missile.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ScreenBuffer.h" />
+    <ClInclude Include="SpecialAlien.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +153,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Missile.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SpecialAlien.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

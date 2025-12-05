@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <chrono>
 #include "AlienManager.h"
+#include "Colour.h"
+
 
 class GameSource
 {
@@ -21,8 +23,8 @@ private:
 	const Vector2 m_windowSize = Vector2(85, 35);
 	const Vector2 m_gameSize = Vector2(81, 31);
 	const int m_gameDrawOffset = 3;
-	const Vector2 m_scoreDrawPosition = Vector2(9, 33);
-	const Vector2 m_livesDrawPosition = Vector2(65, 33);
+	const Vector2 m_scoreDrawPosition = Vector2(10, 33);
+	const Vector2 m_livesDrawPosition = Vector2(64, 33);
 	
 	const int NUMBER_OF_BARRIERS = 20;
 
@@ -33,9 +35,8 @@ private:
 	GameWindow m_gameWindow;
 
 	GameObject m_ground;
-	Player m_player;
+	std::unique_ptr<Player> m_player;
 	AlienManager m_alienManager;
-
 
 	float m_deltaTime = 0;
 	std::chrono::steady_clock::time_point m_lastTime;
@@ -83,7 +84,7 @@ public:
 	void swapBuffers();
 	void drawGame();
 
-	void updateScore();
+	void updateScore() const;
 	void removeLife(int prevLives);
 	void drawGameUI();
 
@@ -94,7 +95,5 @@ public:
 	void quitGame();
 
 	void calculateDeltaTime();
-
-
 };
 

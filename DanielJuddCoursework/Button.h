@@ -19,7 +19,7 @@ public:
 	Button();
 	Button(int width, int height, Vector2 position, std::string name);
 	void drawButton(GameWindow& window);
-	bool buttonInput(const int x, const int y);
+	bool buttonInput(const int x, const int y) const;
 
 	
 };

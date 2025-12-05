@@ -16,13 +16,13 @@ void GameWindow::setWindow(Vector2 size)
 	}
 
 
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	m_width = size.x;
 	m_height = size.y;
 
 	SMALL_RECT windowSize = { 0, 0, (short)m_width + 20, (short)m_height + 20 };
-	if (!SetConsoleWindowInfo(hOut, TRUE, &windowSize))
+	if (!SetConsoleWindowInfo(hStdOut, TRUE, &windowSize))
 	{
 		std::cout << "SetConsoleWindowIngo failed with error" << GetLastError() << std::endl;
 	}
@@ -31,28 +31,51 @@ void GameWindow::setWindow(Vector2 size)
 		std::cout << "Set ConsoleTitle failed with error" << GetLastError() << std::endl;
 	}
 
-	SetConsoleTextAttribute(hOut, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-
 	CONSOLE_CURSOR_INFO cursorInfo;
-	GetConsoleCursorInfo(hOut, &cursorInfo);
+	GetConsoleCursorInfo(hStdOut, &cursorInfo);
 	cursorInfo.bVisible = false; // set the cursor visibility
-	SetConsoleCursorInfo(hOut, &cursorInfo);
+	SetConsoleCursorInfo(hStdOut, &cursorInfo);
 
 	SetConsoleOutputCP(CP_UTF8);
 }
 
 void GameWindow::setCursorPosition(const int x, const int y)
 {
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	std::cout.flush();
 	COORD coord = { (SHORT)x, (SHORT)y };
-	SetConsoleCursorPosition(hOut, coord);
+	SetConsoleCursorPosition(hStdOut, coord);
 }
 
 void GameWindow::setCursorPosition(const Vector2 pos)
 {
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	std::cout.flush();
 	COORD coord = { (SHORT)pos.x, (SHORT)pos.y };
-	SetConsoleCursorPosition(hOut, coord);
+	SetConsoleCursorPosition(hStdOut, coord);
+}
+
+//https://stackoverflow.com/questions/9274745/using-writeconsoleoutputcharacter-and-setconsoletextattribute/9275247#9275247
+void GameWindow::drawCharToScreen(const Vector2& pos, const BufferCell& cell) const
+{
+	COORD here{ static_cast<SHORT>(pos.x) , static_cast<SHORT>(pos.y) };
+	WORD attribute = cell.colour;
+	DWORD written;
+	::WriteConsoleOutputAttribute(hStdOut, &attribute, 1, here, &written);
+	::WriteConsoleOutputCharacterA(hStdOut, &cell.character, 1, here, &written);
+}
+
+void GameWindow::drawWordToScreen(const Vector2& pos, const std::string& word, const WORD& color) const
+{
+	COORD here{ static_cast<SHORT>(pos.x) , static_cast<SHORT>(pos.y) };
+	WORD attribute = color;
+	DWORD written;
+
+	for (int i = 0; i < word.length(); i++)
+	{
+		::WriteConsoleOutputAttribute(hStdOut, &attribute, 1, here, &written);
+		::WriteConsoleOutputCharacterA(hStdOut, &word[i], 1, here, &written);
+		here.X++;
+	}
+
 }

@@ -25,14 +25,16 @@ void AlienManager::initialiseAliens()
 			pos.y += 2;
 			scoreForAlien -= 10;
 		}
-		m_aliens.emplace_back(pos, 'A', scoreForAlien);
+		m_aliens.emplace_back(pos, 'A', ColourCodes[Green], scoreForAlien);
 		pos.x += 5;
 	}
 
 	for (int i = 0; i < NUMBER_OF_MISSILES; i++)
 	{
-		m_missiles.emplace_back(0, 0, '!', false);
+		m_missiles.emplace_back(0, 0, '!', ColourCodes[Red], false);
 	}
+
+	m_specialAlien = SpecialAlien(Vector2(0, 0), 'A', ColourCodes[Blue], 100);
 }
 
 
@@ -40,6 +42,14 @@ void AlienManager::update(float deltaTime, Player& player, std::vector<Barrier>&
 {
 	m_currentAlienMoveDelta += deltaTime;
 	m_currentAlienShootDelta += deltaTime;
+
+	if(!m_specialAlien.isActive())
+	{
+		if (rand() % 1000 < 5)
+		{
+			m_specialAlien.spawn(Vector2(0, 0));
+		}
+	}
 
 	if (m_currentAlienMoveDelta >= m_currentAlienMoveDelay)
 	{
@@ -66,7 +76,7 @@ void AlienManager::update(float deltaTime, Player& player, std::vector<Barrier>&
 
 	for (int i = 0; i < m_missiles.size(); i++)
 	{
-		m_missiles[i].update();
+		m_missiles[i].update(deltaTime);
 
 		if (m_currentAlienShootDelta >= m_currentAlienShootDelay)
 		{
@@ -90,6 +100,12 @@ void AlienManager::update(float deltaTime, Player& player, std::vector<Barrier>&
 		}
 	}
 
+
+	if (m_specialAlien.isActive())
+	{
+		m_specialAlien.update(deltaTime);
+	}
+
 }
 
 void AlienManager::updateBuffer(ScreenBuffer& buffer)
@@ -106,6 +122,12 @@ void AlienManager::updateBuffer(ScreenBuffer& buffer)
 			buffer.setGameObjectAtPos(m_missiles[i]);
 		}
 	}
+
+	if (m_specialAlien.isActive())
+	{
+		buffer.setGameObjectAtPos(m_specialAlien);
+	}
+	
 }
 
 void AlienManager::reduceDelay()

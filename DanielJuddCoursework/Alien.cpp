@@ -1,5 +1,5 @@
 #include "Alien.h"
-Alien::Alien(Vector2 pos, char body, int score) : GameObject(pos, body), m_scoreForKill(score)
+Alien::Alien(Vector2 pos, char body, WORD colour, int score) : GameObject(pos, body, colour), m_scoreForKill(score)
 {
 
 }

@@ -4,12 +4,12 @@ Barrier::Barrier() : GameObject()
 {
 	
 }
-Barrier::Barrier(int xPos, int yPos, char body, bool isMovingright) : GameObject(xPos, yPos, body), m_movingRight(isMovingright)
+Barrier::Barrier(int xPos, int yPos, char body, WORD colour, bool isMovingright) : GameObject(xPos, yPos, body, colour), m_movingRight(isMovingright)
 {
 	
 }
 
-Barrier::Barrier(Vector2 pos, char body, bool isMovingright) : GameObject(pos, body), m_movingRight(isMovingright)
+Barrier::Barrier(Vector2 pos, char body, WORD colour, bool isMovingright) : GameObject(pos, body, colour), m_movingRight(isMovingright)
 {
 
 }
@@ -24,7 +24,7 @@ void Barrier::damageBarrier()
 	m_body = m_barrierStates[m_barrierHealth];
 }
 
-void Barrier::update()
+void Barrier::update(float deltaTime)
 {
 	if (m_movingRight)
 	{
