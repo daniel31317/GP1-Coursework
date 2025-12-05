@@ -42,5 +42,6 @@ public:
 	SpecialAlien* getSpecialAlien() { return &m_specialAlien; }
 	void reduceDelay();
 	int getNumberOfAliens() { return (int)m_aliens.size(); }
+	int getLowestAlienY();
 };
 

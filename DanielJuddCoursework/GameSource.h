@@ -30,6 +30,8 @@ private:
 
 	int m_score = 0;
 
+	int m_alienWinPositionY = 0;
+
 	bool m_keepScore = false;
 
 	GameWindow m_gameWindow;

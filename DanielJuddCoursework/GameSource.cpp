@@ -57,6 +57,8 @@ void GameSource::initialiseSpaceInvaders()
 		m_barriers.emplace_back(barrierPos.x + i, barrierPos.y, '#', ColourCodes[Yellow], false);
 	}
 
+	m_alienWinPositionY = barrierPos.y + 1;
+
 	//draw score
 	if (!m_keepScore)
 	{
@@ -128,6 +130,12 @@ void GameSource::updateGameSpaceInvaders()
 			m_currentState = &GameSource::runRetryMenu;
 		}
 	}
+
+	if (m_alienManager.getLowestAlienY() == m_alienWinPositionY)
+	{
+		m_currentState = &GameSource::runRetryMenu;
+	}
+
 
  	Missile* playerMissile = m_player->getMissile();
 

@@ -134,3 +134,17 @@ void AlienManager::reduceDelay()
 {
 	m_currentAlienMoveDelay -= 0.02f;
 }
+
+int AlienManager::getLowestAlienY()
+{
+	int lowestY = 0;
+	for(int i = 0; i < m_aliens.size(); i++)
+	{
+		if (m_aliens[i].getPosition().y > lowestY)
+		{
+			lowestY = m_aliens[i].getPosition().y;
+		}
+	}
+
+	return lowestY;
+}
