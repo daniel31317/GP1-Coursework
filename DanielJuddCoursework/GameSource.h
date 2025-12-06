@@ -27,6 +27,9 @@ private:
 	const int m_gameDrawOffset = 3;
 	const Vector2 m_scoreDrawPosition = Vector2(10, 33);
 	const Vector2 m_livesDrawPosition = Vector2(64, 33);
+	const Vector2 m_timerDrawPosition = Vector2(56, 1);
+	const float m_froggerTimeLimit = 60.0f;
+	float m_currentFroggerTime = m_froggerTimeLimit;
 
 	const std::vector<int> m_froggerWinPointsX = 
 	{
@@ -37,9 +40,12 @@ private:
 
 	std::vector<GameObject> m_froggerWinObjects;
 	
-	const int NUMBER_OF_BARRIERS = 20;
+	const int NUMBER_OF_BARRIERS = 640;
+	const int NUMBER_OF_TOP_BORDER = 104;
 
 	int m_score = 0;
+
+	int m_lastTimerBarUnits = 20;
 
 	int m_alienWinPositionY = 0;
 
@@ -105,6 +111,9 @@ public:
 	void updateScore() const;
 	void removeLife(int prevLives);
 	void drawGameUI();
+
+	void drawTimer();
+	void updateTimer();
 
 	void checkFroggerWinConditions();
 

@@ -23,6 +23,7 @@ GameSource::GameSource()
 	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 
 	m_barriers.reserve(NUMBER_OF_BARRIERS);
+	m_froggerTopBorder.reserve(NUMBER_OF_TOP_BORDER);
 	m_alienManager.setGameSize(m_gameSize);
 
 	m_lastTime = std::chrono::steady_clock::now();
@@ -83,8 +84,11 @@ void GameSource::initialiseFrogger()
 
 	createFroggerBarriers();
 	drawGameUI();
+	drawTimer();
 
 	m_remianingFroggerWinPointsX = m_froggerWinPointsX;
+
+	m_lastTimerBarUnits = 20;
 
 	m_froggerWinObjects.clear();
 
@@ -97,7 +101,7 @@ void GameSource::initialiseFrogger()
 
 void GameSource::createFroggerBarriers()
 {
-	m_barriers.clear();
+	 m_barriers.clear();
 
 	int y = m_gameSize.y - 6;
 
@@ -216,6 +220,19 @@ void GameSource::processInput()
 	{
 		m_currentState = &GameSource::runMenu;
 	}
+
+	//reset game if R is pressed
+	if (GetKeyState(82) & 0x8000)
+	{
+		if(m_isSpaceInvaders)
+		{
+			m_currentState = &GameSource::initialiseSpaceInvaders;
+		}
+		else
+		{
+			m_currentState = &GameSource::initialiseFrogger;
+		}
+	}
 }
 
 
@@ -289,6 +306,7 @@ void GameSource::updateBufferSpaceInvaders()
 
 void GameSource::updateGameFrogger()
 {
+
 	if(m_player->getPosition().y < m_player->getHighestYPosition())
 	{
 		m_player->setHighestYPosition(m_player->getPosition().y);
@@ -299,6 +317,8 @@ void GameSource::updateGameFrogger()
 
 
 	int livesBefore = m_player->getPlayerLives();
+
+	updateTimer();
 
 	for (int i = 0; i < m_barriers.size(); i++)
 	{
@@ -316,6 +336,7 @@ void GameSource::updateGameFrogger()
 	if (livesBefore != m_player->getPlayerLives())
 	{
 		removeLife(livesBefore);
+		drawTimer();
 		if (m_player->getPlayerLives() == 0)
 		{
 			m_currentState = &GameSource::runRetryMenu;
@@ -398,6 +419,29 @@ void GameSource::drawGameUI()
 
 }
 
+void GameSource::drawTimer()
+{
+	m_lastTimerBarUnits = 20;
+	m_currentFroggerTime = m_froggerTimeLimit;
+	m_gameWindow.drawWordToScreen(m_timerDrawPosition, "TIME : [][][][][][][][][][]", ColourCodes[Red]);
+}
+
+void GameSource::updateTimer()
+{
+	m_currentFroggerTime -= m_deltaTime;
+	int m_thisTimeBarUnits = ceil(m_currentFroggerTime / 3.f);
+	if (m_thisTimeBarUnits < m_lastTimerBarUnits)
+	{
+		m_gameWindow.setCursorPosition(m_timerDrawPosition.x + 7 + m_thisTimeBarUnits, m_timerDrawPosition.y);
+		std::cout << ' ';
+		m_lastTimerBarUnits = m_thisTimeBarUnits;
+		if (m_thisTimeBarUnits == 0)
+		{
+			m_player->loseLife();
+		}
+	}
+}
+
 void GameSource::checkFroggerWinConditions()
 {
 	Vector2 playerPos = m_player->getPosition();
@@ -417,6 +461,8 @@ void GameSource::checkFroggerWinConditions()
 				return;
 			}
 			m_score += 50;
+			m_score += m_lastTimerBarUnits * 10;
+			drawTimer();
 			updateScore();
 
 			auto it = std::remove(m_remianingFroggerWinPointsX.begin(), m_remianingFroggerWinPointsX.end(), m_froggerWinPointsX[i]);

@@ -8,7 +8,7 @@ class Player : public GameObject
 		//both
 		int m_lives = 4;
 		bool m_isSpaceInvaders = true;
-		const float m_moveDelay = 0.05f;
+		const float m_moveDelay = 0.1f;
 		float m_moveDelta = 0.0f;
 
 		//space invaders
