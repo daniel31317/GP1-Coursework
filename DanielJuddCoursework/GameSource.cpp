@@ -116,9 +116,9 @@ void GameSource::createFroggerBarriers()
 	y -= 4;
 	placeRowOfBarriers(5, 4, 10, 15, y, true, 0.25f, ColourCodes[DarkPink]);
 	y--;
-	placeRowOfBarriers(5, 4, 10, 15, y, false, 0.25f, ColourCodes[Cyan]);
+	placeRowOfBarriers(3, 10, 0, 5, y, true, 0.125f, ColourCodes[DarkCyan]);
 	y--;
-	placeRowOfBarriers(3, 10, 0, 5, y, true, 0.125f, ColourCodes[Green]);
+	placeRowOfBarriers(5, 4, 10, 15, y, false, 0.25f, ColourCodes[Cyan]);
 	y--;
 	placeRowOfBarriers(10, 3, 16, 15, y, false, 0.5f, ColourCodes[White]);
 	y--;
@@ -416,7 +416,7 @@ void GameSource::checkFroggerWinConditions()
 				m_player->loseLife();	
 				return;
 			}
-			m_score += 250;
+			m_score += 50;
 			updateScore();
 
 			auto it = std::remove(m_remianingFroggerWinPointsX.begin(), m_remianingFroggerWinPointsX.end(), m_froggerWinPointsX[i]);
@@ -427,6 +427,7 @@ void GameSource::checkFroggerWinConditions()
 			{
 				m_keepScore = true;
 				m_currentState = &GameSource::initialiseFrogger;
+				m_score += 1000;
 			}
 
 			m_froggerWinObjects.emplace_back(m_froggerWinPointsX[i], 1, 'v', ColourCodes[Green]);
