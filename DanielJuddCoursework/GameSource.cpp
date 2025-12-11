@@ -28,6 +28,7 @@ GameSource::GameSource()
 	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 
 	//reserve memory for vectors
+	//https://www.geeksforgeeks.org/cpp/using-stdvectorreserve-whenever-possible/
 	m_barriers.reserve(NUMBER_OF_BARRIERS);
 	m_froggerTopBorder.reserve(NUMBER_OF_TOP_BORDER);
 	m_alienManager.setGameSize(m_gameSize);
@@ -179,6 +180,7 @@ void GameSource::createFroggerBarriers()
 		if(isWinPoint)
 		{
 			//remove the last point as we will replace it
+			//https://gist.github.com/florianvazelle/e2902878ddf460d0d5986abd303f7771
 			m_froggerTopBorder.pop_back();
 			m_froggerTopBorder.emplace_back(x - 2, y, '-', ColourCodes[White], true, true, 0.0f);
 			m_froggerTopBorder.emplace_back(x - 2, y - 1, '-', ColourCodes[White], true, true, 0.0f);
