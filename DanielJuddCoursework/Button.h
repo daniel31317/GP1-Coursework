@@ -7,17 +7,24 @@
 class Button
 {
 private:
+	const char corner = 'O';
+	const char horizontalLine = '-';
+	const char verticalLine = '|';
+	const char space = ' ';
+
 	int m_width, m_height;
 	Vector2 m_position;
 	Vector2 m_drawPosition;
 	std::string m_name;
-	std::vector<std::vector<char>> m_buttonContent;
+	WORD m_borderColour;
+	WORD m_nameColour;
+	std::vector<std::vector<BufferCell>> m_buttonContent;
 
-	const char getButtonDesignAtPosition(const int x, const int y, int& nameIndex, const int nameStartPos);
+	BufferCell getButtonDesignAtPosition(const int x, const int y, int& nameIndex, const int nameStartPos);
 	
 public:
 	Button();
-	Button(int width, int height, Vector2 position, std::string name);
+	Button(int width, int height, Vector2 position, std::string name, WORD borderColour, WORD nameColour);
 	void drawButton(GameWindow& window);
 	bool buttonInput(const int x, const int y) const;
 

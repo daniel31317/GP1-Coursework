@@ -16,7 +16,7 @@ void GameWindow::setWindow(Vector2 size)
 	}
 
 
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	m_width = size.x;
 	m_height = size.y;
@@ -59,6 +59,15 @@ void GameWindow::setCursorPosition(const Vector2 pos)
 void GameWindow::drawCharToScreen(const Vector2& pos, const BufferCell& cell) const
 {
 	COORD here{ static_cast<SHORT>(pos.x) , static_cast<SHORT>(pos.y) };
+	WORD attribute = cell.colour;
+	DWORD written;
+	::WriteConsoleOutputAttribute(hStdOut, &attribute, 1, here, &written);
+	::WriteConsoleOutputCharacterA(hStdOut, &cell.character, 1, here, &written);
+}
+
+void GameWindow::drawCharToScreen(const int x, const int y, const BufferCell& cell) const
+{
+	COORD here{ static_cast<SHORT>(x) , static_cast<SHORT>(y) };
 	WORD attribute = cell.colour;
 	DWORD written;
 	::WriteConsoleOutputAttribute(hStdOut, &attribute, 1, here, &written);

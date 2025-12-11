@@ -8,15 +8,15 @@ GameSource::GameSource()
 	m_frontBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
 	m_backBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
 
-	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "SpaceInvaders");
-	m_froggerBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Frogger");
-	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 21), "Quit");
-	m_menuBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Menu");
-	m_retryBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "Retry");
+	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "SpaceInvaders", ColourCodes[Green], ColourCodes[Green]);
+	m_froggerBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Frogger", ColourCodes[Pink], ColourCodes[Pink]);
+	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 21), "Quit", ColourCodes[Red], ColourCodes[Red]);
+	m_menuBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Menu", ColourCodes[Blue], ColourCodes[Blue]);
+	m_retryBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "Retry", ColourCodes[Green], ColourCodes[Green]);
 
 
-	m_windowBorder = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
-	m_GameBorder = std::make_unique<Button>(m_gameSize.x + 2, m_gameSize.y + 2, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "");
+	m_windowBorder = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "", ColourCodes[White], ColourCodes[White]);
+	m_GameBorder = std::make_unique<Button>(m_gameSize.x + 2, m_gameSize.y + 2, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "", ColourCodes[White], ColourCodes[White]);
 
 	m_currentState = &GameSource::runMenu;
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
@@ -43,7 +43,7 @@ void GameSource::initialiseSpaceInvaders()
 {
 	m_isSpaceInvaders = true;
 
-	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 3, '^', ColourCodes[Cyan], m_isSpaceInvaders);
+	m_player = std::make_unique<Player>(12, m_gameSize.y - 3, '^', ColourCodes[Cyan], m_isSpaceInvaders);
 
 	m_alienManager.initialiseAliens();
 
@@ -78,7 +78,7 @@ void GameSource::initialiseFrogger()
 {
 	m_isSpaceInvaders = false;
 
-	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 2, '^', ColourCodes[Green], m_isSpaceInvaders);
+	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 3, '^', ColourCodes[Green], m_isSpaceInvaders);
 
 	m_player->setHighestYPosition(m_player->getPosition().y);
 
@@ -395,7 +395,7 @@ void GameSource::removeLife(int previousLives)
 	lifeToRemove.x += ((previousLives) * 2) + previousLives - 1;
 	m_gameWindow.setCursorPosition(lifeToRemove);
 	std::cout << "  ";
-	m_player->setPosition(m_gameSize.x / 2, m_gameSize.y - 1);
+	m_player->setPosition(m_gameSize.x / 2, m_gameSize.y - 3);
 }
 
 
@@ -429,7 +429,7 @@ void GameSource::drawTimer()
 void GameSource::updateTimer()
 {
 	m_currentFroggerTime -= m_deltaTime;
-	int m_thisTimeBarUnits = ceil(m_currentFroggerTime / 3.f);
+	int m_thisTimeBarUnits = static_cast<int>(ceil(m_currentFroggerTime / 3.f));
 	if (m_thisTimeBarUnits < m_lastTimerBarUnits)
 	{
 		m_gameWindow.setCursorPosition(m_timerDrawPosition.x + 7 + m_thisTimeBarUnits, m_timerDrawPosition.y);
@@ -559,7 +559,7 @@ void GameSource::runRetryMenu()
 	m_quitBtn->drawButton(m_gameWindow);
 	m_menuBtn->drawButton(m_gameWindow);
 	m_retryBtn->drawButton(m_gameWindow);
-
+	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x / 2 - 1, 3), "GAME OVER", ColourCodes[DarkRed]);
 
 	//from https://stackoverflow.com/questions/73958407/c-get-users-cursor-position-in-console-cells 
 	//and https://learn.microsoft.com/en-us/windows/console/reading-input-buffer-events

@@ -7,16 +7,13 @@ Button::Button()
 	m_position = Vector2();
 	m_drawPosition = Vector2();
 	m_name = "";
+	m_borderColour = ColourCodes[White];
+	m_nameColour = ColourCodes[White];;
 }
 
-Button::Button(int width, int height, Vector2 position, std::string name)
+Button::Button(int width, int height, Vector2 position, std::string name, WORD borderColour, WORD nameColour) : m_width(width), m_height(height), m_position(position),
+m_drawPosition(Vector2(m_position.x - m_width / 2, m_position.y - m_height / 2)), m_name(name), m_borderColour(borderColour), m_nameColour(nameColour)
 {
-	m_width = width;
-	m_height = height;
-	m_position = position;
-	m_drawPosition = Vector2(m_position.x - m_width / 2, m_position.y - m_height / 2);
-	m_name = name;
-
 	//prevent weird things from happening whilst initializing
 	try
 	{
@@ -35,13 +32,13 @@ Button::Button(int width, int height, Vector2 position, std::string name)
 		std::exit(EXIT_FAILURE);
 	}
 
-	m_buttonContent.resize(width);
+	m_buttonContent.reserve(width);
 
 	int nameIndex = 0;
 	int nameStartPos = (width / 2) - (m_name.length() / 2);
 
 	for (int i = 0; i < width; ++i) {
-		m_buttonContent[i] = std::vector<char>(height);
+		m_buttonContent.emplace_back(std::vector<BufferCell>(height));
 		for (int j = 0; j < height; j++)
 		{
 			m_buttonContent[i][j] = getButtonDesignAtPosition(i, j, nameIndex, nameStartPos);
@@ -53,53 +50,42 @@ Button::Button(int width, int height, Vector2 position, std::string name)
 
 void Button::drawButton(GameWindow& window)
 {
-	Vector2 drawPos = m_drawPosition;
-
 	for (int x = 0; x < m_width; x++)
 	{
 		for (int y = 0; y < m_height; y++)
 		{
-			window.setCursorPosition(drawPos);
-			std::cout << m_buttonContent[x][y];
-			drawPos.y++;
+			window.drawCharToScreen(x + m_drawPosition.x, y + m_drawPosition.y, m_buttonContent[x][y]);
 		}
-		drawPos.x++;
-		drawPos.y = m_drawPosition.y;
 	}
 }
 
-const char Button::getButtonDesignAtPosition(const int x, const int y, int& nameIndex, const int nameStartPos)
+BufferCell Button::getButtonDesignAtPosition(const int x, const int y, int& nameIndex, const int nameStartPos)
 {
-	const char corner = 'O';
-	const char horizontalLine = '-';
-	const char verticalLine = '|';
-	const char space = ' ';
-
 	if ((x == 0 || x == m_width - 1) && (y == 0 || y == m_height - 1))
 	{
-		return corner;
+		return BufferCell(corner, m_borderColour);
 	}
 
 	if (x == 0 || x == m_width - 1)
 	{
-		return verticalLine;
+		return BufferCell(verticalLine, m_borderColour);
 	}
 
 	if (y == 0 || y == m_height - 1)
 	{
-		return horizontalLine;
+		return BufferCell(horizontalLine, m_borderColour);
 	}
 
 	if (x >= nameStartPos && y == m_height / 2)
 	{
 		if (nameIndex < m_name.length())
-		{
+		{		
 			nameIndex++;
-			return m_name[nameIndex - 1];
+			return BufferCell(m_name[nameIndex - 1], m_nameColour);
 		}
 	}
 
-	return space;
+	return BufferCell(space, m_borderColour);
 }
 
 

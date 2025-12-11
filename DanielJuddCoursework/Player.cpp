@@ -29,13 +29,13 @@ void Player::processInput(float deltaTime)
 
 		m_moveDelta = 0;
 
-		//A is pressed
-		if (GetKeyState(65) & 0x8000 && m_position.x > 0)
+		//A or left arrow is pressed
+		if ((GetKeyState(65) & 0x8000 || GetKeyState(37) & 0x8000) && m_position.x > 0)
 		{
 			move(-1, 0);
 		}
-		//D is pressed
-		else if (GetKeyState(68) & 0x8000 && m_position.x < 78)
+		//D or right arrow is pressed
+		else if ((GetKeyState(68) & 0x8000 || GetKeyState(39) & 0x8000) && m_position.x < 78)
 		{
 			move(1, 0);
 		}
@@ -52,26 +52,26 @@ void Player::processInput(float deltaTime)
 		}
 
 		m_moveDelta = 0;
-		//W is pressed
-		if (GetKeyState(87) & 0x8000 && m_position.y > 0)
+		//W or up arrow is pressed
+		if ((GetKeyState(87) & 0x8000 || GetKeyState(38) & 0x8000) && m_position.y > 0)
 		{
 			move(0, -1);
 			m_body = '^';
 		}
-		//S is pressed
-		else if (GetKeyState(83) & 0x8000 && m_position.y < 28)
+		//S or down arrow is pressed
+		else if ((GetKeyState(83) & 0x8000 || GetKeyState(40) & 0x8000) && m_position.y < 28)
 		{
 			move(0, 1);
 			m_body = 'v';
 		}
-		//A is pressed
-		else if (GetKeyState(65) & 0x8000 && m_position.x > 0)
+		//A or left arrow is pressed
+		else if ((GetKeyState(65) & 0x8000 || GetKeyState(37) & 0x8000) && m_position.x > 0)
 		{
 			move(-1, 0);
 			m_body = '<';
 		}
-		//D is pressed
-		else if (GetKeyState(68) & 0x8000 && m_position.x < 78)
+		//D or right arrow is pressed
+		else if ((GetKeyState(68) & 0x8000 || GetKeyState(39) & 0x8000) && m_position.x < 78)
 		{
 			move(1, 0);
 			m_body = '>';
