@@ -32,22 +32,25 @@ m_drawPosition(Vector2(m_position.x - m_width / 2, m_position.y - m_height / 2))
 		std::exit(EXIT_FAILURE);
 	}
 
+	//reserve vector memory
 	m_buttonContent.reserve(width);
 
+	//get name start pos
 	int nameIndex = 0;
-	int nameStartPos = (width / 2) - (m_name.length() / 2);
+	int nameStartPos = static_cast<int>((width / 2) - (m_name.length() / 2));
 
 	for (int i = 0; i < width; ++i) {
 		m_buttonContent.emplace_back(std::vector<BufferCell>(height));
 		for (int j = 0; j < height; j++)
 		{
+			//fill in button content
 			m_buttonContent[i][j] = getButtonDesignAtPosition(i, j, nameIndex, nameStartPos);
 		}
 	}
 }
 
 
-
+//draws the button to the screen
 void Button::drawButton(GameWindow& window)
 {
 	for (int x = 0; x < m_width; x++)
@@ -59,6 +62,8 @@ void Button::drawButton(GameWindow& window)
 	}
 }
 
+
+//returns the correct buffer cell data for the point needed
 BufferCell Button::getButtonDesignAtPosition(const int x, const int y, int& nameIndex, const int nameStartPos)
 {
 	if ((x == 0 || x == m_width - 1) && (y == 0 || y == m_height - 1))
@@ -89,6 +94,7 @@ BufferCell Button::getButtonDesignAtPosition(const int x, const int y, int& name
 }
 
 
+//if the mouse is within these co-ordiantes then the button is clicked
 bool Button::buttonInput(const int x, const int y) const
 {
 	if (x < m_drawPosition.x || x >= m_drawPosition.x + m_width || y < m_drawPosition.y || y >= m_drawPosition.y + m_height)

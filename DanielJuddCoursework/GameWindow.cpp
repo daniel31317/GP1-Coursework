@@ -4,8 +4,11 @@ void GameWindow::setWindow(Vector2 size)
 {
 	//from https://stackoverflow.com/questions/79152088/how-to-change-console-size-on-windows-11
 	HWND hwnd = GetConsoleWindow();
+
 	Sleep(10);//If you execute these code immediately after the program starts, you must wait here for a short period of time, otherwise GetWindow will fail. I speculate that it may be because the console has not been fully initialized.
+	
 	HWND owner = GetWindow(hwnd, GW_OWNER);
+
 	if (owner == NULL) {
 		// Windows 10
 		SetWindowPos(hwnd, nullptr, 0, 0, 815, 730, SWP_NOZORDER | SWP_NOMOVE);
@@ -32,6 +35,7 @@ void GameWindow::setWindow(Vector2 size)
 	}
 
 	CONSOLE_CURSOR_INFO cursorInfo;
+
 	GetConsoleCursorInfo(hStdOut, &cursorInfo);
 	cursorInfo.bVisible = false; // set the cursor visibility
 	SetConsoleCursorInfo(hStdOut, &cursorInfo);

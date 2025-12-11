@@ -1,5 +1,7 @@
 #include "SpecialAlien.h"
 
+
+//move special alein on update if it is active
 void SpecialAlien::update(float deltaTime)
 {
 	if(!m_isActive)
@@ -20,6 +22,7 @@ void SpecialAlien::update(float deltaTime)
 	}
 }
 
+//spawns in the special alien
 void SpecialAlien::spawn(Vector2 pos)
 {
 	m_position = pos;

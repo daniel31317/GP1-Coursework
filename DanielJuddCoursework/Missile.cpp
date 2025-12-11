@@ -1,5 +1,6 @@
 #include "Missile.h"
 
+//constructors
 Missile::Missile(Vector2 pos, char body, WORD colour, bool playersMissile) : GameObject(pos, body, colour), m_isPlayerMissile(playersMissile)
 {
 
@@ -9,6 +10,8 @@ Missile::Missile(int xPos, int yPos, char body, WORD colour, bool playersMissile
 {
 
 }
+
+
 
 void Missile::update(float deltaTime)
 {
@@ -24,6 +27,7 @@ void Missile::update(float deltaTime)
 		return;
 	}
 
+	//move missile up on screen (down in y direction) if its players
 	m_currentMissileDelta = 0.0f;
 	if (m_isPlayerMissile)
 	{			
@@ -33,7 +37,7 @@ void Missile::update(float deltaTime)
 			m_isActive = false;
 		}
 	}
-		
+	//smae thing but opposite as it is aliens	
 	else
 	{
 		move(0, 1);
@@ -75,6 +79,7 @@ bool Missile::collisionDetection(std::vector<Alien>& aliens)
 		return false;
 	}
 
+	//loop thoroufh aliens and check if colliding
 	for (int i = 0; i < aliens.size(); i++)
 	{
 		if (isColliding(aliens[i]))
@@ -93,6 +98,7 @@ bool Missile::collisionDetection(std::vector<Alien>& aliens)
 }
 
 
+//same as allien function but with barriers
 bool Missile::collisionDetection(std::vector<Barrier>& barriers)
 {
 	if (!m_isActive)
@@ -120,6 +126,7 @@ bool Missile::collisionDetection(std::vector<Barrier>& barriers)
 	return false;
 }
 
+//same but only for player
 bool Missile::collisionDetection(GameObject& gameObject)
 {
 	if (!m_isActive)

@@ -13,6 +13,8 @@ Barrier::Barrier(Vector2 pos, char body, WORD colour, bool isMovingright, bool i
 
 }
 
+
+//remnove health and change state
 void Barrier::damageBarrier()
 {
 	if (m_barrierHealth == 0)
@@ -23,6 +25,8 @@ void Barrier::damageBarrier()
 	m_body = m_barrierStates[m_barrierHealth];
 }
 
+
+//update is only for frogger barriers but
 void Barrier::update(float deltaTime)
 {
 	m_moveDelta += deltaTime;
@@ -34,6 +38,8 @@ void Barrier::update(float deltaTime)
 
 	m_moveDelta = 0.0f;
 
+
+	//if we are moving right then move the object and if there is a player on top of it we move it as well
 	if (m_movingRight)
 	{
 		if (m_position.x < 78)
@@ -74,6 +80,8 @@ void Barrier::update(float deltaTime)
 	}
 }
 
+
+//collision with the player but takes into account if the player can stand on it
 void Barrier::playerCollision(Player& player)
 {
 	if (isColliding(player))

@@ -3,11 +3,14 @@
 
 GameSource::GameSource()
 {
+	//set up window
 	m_gameWindow.setWindow(m_windowSize);
 
+	//create buffers
 	m_frontBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
 	m_backBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
 
+	//make buttons
 	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 6), "SpaceInvaders", ColourCodes[Green], ColourCodes[Green]);
 	m_froggerBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 13), "Frogger", ColourCodes[Pink], ColourCodes[Pink]);
 	m_controlsBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 20), "Controls", ColourCodes[Blue], ColourCodes[Blue]);
@@ -15,23 +18,27 @@ GameSource::GameSource()
 	m_menuBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Menu", ColourCodes[Blue], ColourCodes[Blue]);
 	m_retryBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "Retry", ColourCodes[Green], ColourCodes[Green]);
 	
-
+	//set up borders
 	m_windowBorder = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "", ColourCodes[White], ColourCodes[White]);
 	m_GameBorder = std::make_unique<Button>(m_gameSize.x + 2, m_gameSize.y + 2, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "", ColourCodes[White], ColourCodes[White]);
 
+	//initial function pointers
 	m_currentState = &GameSource::runMenu;
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
 	m_updateBuffer = &GameSource::updateBufferSpaceInvaders;
 
+	//reserve memory for vectors
 	m_barriers.reserve(NUMBER_OF_BARRIERS);
 	m_froggerTopBorder.reserve(NUMBER_OF_TOP_BORDER);
 	m_alienManager.setGameSize(m_gameSize);
 
+	//initial time
 	m_lastTime = std::chrono::steady_clock::now();
 }
 
 void GameSource::runGame()
 {
+	//main loop if the while loop finishes the GameSource goes out of scope
 	while (m_runLoop)
 	{
 		calculateDeltaTime();	
@@ -44,14 +51,18 @@ void GameSource::initialiseSpaceInvaders()
 {
 	m_isSpaceInvaders = true;
 
+	//create player
 	m_player = std::make_unique<Player>(12, m_gameSize.y - 3, '^', ColourCodes[Cyan], m_isSpaceInvaders);
 
+	//make aliens
 	m_alienManager.initialiseAliens();
 
+	//create barriers
 	m_barriers.clear();
 	
 	placeRowOfBarriers(5, 4, 10, 14, m_gameSize.y - 6, false, 0.0f, ColourCodes[Yellow]);
 
+	//if the aliens get to this position they win
 	m_alienWinPositionY = m_gameSize.y - 5;
 
 	//draw score
@@ -64,9 +75,8 @@ void GameSource::initialiseSpaceInvaders()
 		m_gameWindow.drawWordToScreen(m_livesDrawPosition, "LIVES : <3 <3 <3 <3", ColourCodes[Red]);
 	}
 	
+	//draw ui
 	drawGameUI();
-
-	m_froggerWinObjects.clear();
 
 	//set function pointers for game loop for specific game
 	m_updateGame = &GameSource::updateGameSpaceInvaders;
@@ -79,18 +89,26 @@ void GameSource::initialiseFrogger()
 {
 	m_isSpaceInvaders = false;
 
+	//make player
 	m_player = std::make_unique<Player>(m_gameSize.x / 2, m_gameSize.y - 3, '^', ColourCodes[Green], m_isSpaceInvaders);
 
+	//set the highest y pos
 	m_player->setHighestYPosition(m_player->getPosition().y);
 
+	//make frogger barriers
 	createFroggerBarriers();
+
+	//ui
 	drawGameUI();
 	drawTimer();
 
+	//reset win points
 	m_remianingFroggerWinPointsX = m_froggerWinPointsX;
 
+	//timer reset
 	m_lastTimerBarUnits = 20;
 
+	//clear the win objects
 	m_froggerWinObjects.clear();
 
 	//set function pointers for game loop for specific game
@@ -142,6 +160,8 @@ void GameSource::createFroggerBarriers()
 	placeRowOfBarriersWithWater(5, 10, y, false, 0.3f);
 	y--;
 
+
+	//create the top border of the frogger world
 	m_froggerTopBorder.clear();
 
 	for (int x = 0; x < m_gameSize.x; x++)
@@ -158,6 +178,7 @@ void GameSource::createFroggerBarriers()
 
 		if(isWinPoint)
 		{
+			//remove the last point as we will replace it
 			m_froggerTopBorder.pop_back();
 			m_froggerTopBorder.emplace_back(x - 2, y, '-', ColourCodes[White], true, true, 0.0f);
 			m_froggerTopBorder.emplace_back(x - 2, y - 1, '-', ColourCodes[White], true, true, 0.0f);
@@ -179,25 +200,30 @@ void GameSource::createFroggerBarriers()
 
 }
 
+
 void GameSource::placeRowOfBarriersWithWater(int barrierSize, int gapBetweenBarriers, int yPos, bool movingRight, float moveDelay)
 {
 	for (int i = 0; i < m_gameSize.x; i++)
 	{
+		//these conditions need to met for a barrier to be placed
 		if (i % (barrierSize + gapBetweenBarriers) == 0 && i != 0)
 		{
+			//make barrier
 			for (int j = 0; j < barrierSize; j++)
 			{
 				m_barriers.emplace_back(i + j, yPos, '=', ColourCodes[DarkYellow], movingRight, false, moveDelay);
 			}
+			//add barrier size to i so it keeps going
 			i += barrierSize - 1;
 		}
-		else
+		else //if not placing barrier then we are placing water
 		{
 			m_barriers.emplace_back(i, yPos, '~', ColourCodes[DarkBlue], movingRight, true, moveDelay);
 		}
 	}
 }
 
+//places a row of barriers across the screen with gaps
 void GameSource::placeRowOfBarriers(int barrierSize, int amount, int initialGap, int gapBetween, int yPos, bool movingRight, float moveDelay, WORD colour)
 {
 	int x = initialGap;
@@ -216,7 +242,7 @@ void GameSource::processInput()
 {
 	m_player->processInput(m_deltaTime);
 
-	//if esc is pressed
+	//if esc is pressed quit game to menu
 	if (GetKeyState(27) & 0x8000)
 	{
 		m_currentState = &GameSource::runMenu;
@@ -241,8 +267,13 @@ void GameSource::updateGameSpaceInvaders()
 {
 	m_player->update(m_deltaTime);
 
+	//get the lives before
 	int livesBefore = m_player->getPlayerLives();
+
+	//we then update the aliens which has its alien missile player detection
 	m_alienManager.update(m_deltaTime, *m_player, m_barriers);
+
+	//if the player was hit by the aliens missile then lose a life and handle 0 lioves
 	if (livesBefore != m_player->getPlayerLives())
 	{
 		removeLife(livesBefore);
@@ -252,16 +283,19 @@ void GameSource::updateGameSpaceInvaders()
 		}
 	}
 
+	//check for lose condition
 	if (m_alienManager.getLowestAlienY() == m_alienWinPositionY)
 	{
 		m_currentState = &GameSource::runRetryMenu;
 	}
 
-
+	//get pointer to players missile
  	Missile* playerMissile = m_player->getMissile();
 
+	//if the missile collides with an alien
 	if(playerMissile->collisionDetection(*m_alienManager.getAliens()))
 	{
+		//handle score and making aliens faster
 		m_alienManager.reduceDelay();
 		m_score += playerMissile->getAlienHitScore();
 		updateScore();
@@ -272,8 +306,8 @@ void GameSource::updateGameSpaceInvaders()
 		}
 	}
 
+	//handle missile collision detection with speial alien
 	SpecialAlien* specialAlien = m_alienManager.getSpecialAlien();
-
 	if(specialAlien->isActive())
 	{
 		if (playerMissile->collisionDetection(*specialAlien))
@@ -284,9 +318,12 @@ void GameSource::updateGameSpaceInvaders()
 		}
 	}
 
+	//barrier collision
 	playerMissile->collisionDetection(m_barriers);
 }
 
+
+//set all game objects to the buffer
 void GameSource::updateBufferSpaceInvaders()
 {
 	m_backBuffer->setGameObjectAtPos(*m_player);
@@ -307,7 +344,7 @@ void GameSource::updateBufferSpaceInvaders()
 
 void GameSource::updateGameFrogger()
 {
-
+	//if the player has reached a higher y point than previous give score
 	if(m_player->getPosition().y < m_player->getHighestYPosition())
 	{
 		m_player->setHighestYPosition(m_player->getPosition().y);
@@ -316,24 +353,29 @@ void GameSource::updateGameFrogger()
 	}
 
 
-
+	//get lives before collision detection with barriers
 	int livesBefore = m_player->getPlayerLives();
 
+	//we do update timer since if its zero we lose a life
 	updateTimer();
 
+	//update barriers and do collision checks
 	for (int i = 0; i < m_barriers.size(); i++)
 	{
 		m_barriers[i].update(m_deltaTime);
 		m_barriers[i].playerCollision(*m_player);
 	}
 
+	//check for collision with the top border since if we touch this its over
 	for (int i = 0; i < m_froggerTopBorder.size(); i++)
 	{
 		m_froggerTopBorder[i].playerCollision(*m_player);
 	}
 
+	
 	checkFroggerWinConditions();
 
+	//if we have lost a life handle udpating ui and loss conditions
 	if (livesBefore != m_player->getPlayerLives())
 	{
 		removeLife(livesBefore);
@@ -345,6 +387,8 @@ void GameSource::updateGameFrogger()
 	}
 }
 
+
+//set all objects on screen to the buffer
 void GameSource::updateBufferFrogger()
 {
 	for (int i = 0; i < m_barriers.size(); i++)
@@ -365,14 +409,14 @@ void GameSource::updateBufferFrogger()
 	}
 }
 
-
+//swap the fornt and back buffer pointers and then clear the back buffer
 void GameSource::swapBuffers()
 {	
 	std::swap(m_frontBuffer, m_backBuffer);
 	m_backBuffer->clearBuffer();
 }
 
-
+//draw the front buffer to the screen
 void GameSource::drawGame()
 {
 	for (int y = 0; y < m_gameSize.y; y++)
@@ -384,12 +428,13 @@ void GameSource::drawGame()
 	}
 }
 
-
+//updates the score
 void GameSource::updateScore() const
 {
 	m_gameWindow.drawWordToScreen(m_scoreDrawPosition, std::to_string(m_score), ColourCodes[Green]);
 }
 
+//remove a life from the player and draw that to the ui
 void GameSource::removeLife(int previousLives)
 {
 	Vector2 lifeToRemove = Vector2(m_livesDrawPosition.x + 6, m_livesDrawPosition.y);
@@ -400,13 +445,14 @@ void GameSource::removeLife(int previousLives)
 }
 
 
-
+//draws the ui to the screen
 void GameSource::drawGameUI()
 {
 	m_GameBorder->drawButton(m_gameWindow);
 	m_gameWindow.setCursorPosition(2, 1);
 	std::cout << "<-- ESC";
 
+	//if we keep are score (we beat the level) then don't overwrite it
 	if (!m_keepScore)
 	{
 		m_gameWindow.drawWordToScreen(Vector2(2, m_windowSize.y - 2), "SCORE : ", ColourCodes[Green]);
@@ -420,6 +466,7 @@ void GameSource::drawGameUI()
 
 }
 
+//draw the timer to the screen
 void GameSource::drawTimer()
 {
 	m_lastTimerBarUnits = 20;
@@ -427,6 +474,7 @@ void GameSource::drawTimer()
 	m_gameWindow.drawWordToScreen(m_timerDrawPosition, "TIME : [][][][][][][][][][]", ColourCodes[Red]);
 }
 
+//update the timer every three seconds by removing one of the brackets the total time is 60s
 void GameSource::updateTimer()
 {
 	m_currentFroggerTime -= m_deltaTime;
@@ -447,11 +495,14 @@ void GameSource::checkFroggerWinConditions()
 {
 	Vector2 playerPos = m_player->getPosition();
 
+	//if we are not at the top dont check
 	if(playerPos.y != 2)
 	{
 		return;
 	}
 
+	//check all remaning points and if the player is within range of a valid forgger win point draw that player and add score
+	//if it is not (the player has already finshed there) then lose a life
 	for (int i = 0; i < m_froggerWinPointsX.size(); i++)
 	{
 		if (m_player->getPosition().x >= m_froggerWinPointsX[i] - 1 && m_player->getPosition().x <= m_froggerWinPointsX[i] + 1)
@@ -487,11 +538,13 @@ void GameSource::checkFroggerWinConditions()
 
 void GameSource::runMenu()
 {
+	//clear buffers and screen
 	system("cls");
 
 	m_frontBuffer->clearBuffer();
 	m_backBuffer->clearBuffer();
 
+	//draw buttons
 	m_windowBorder->drawButton(m_gameWindow);
 	m_spaceInvadersBtn->drawButton(m_gameWindow);
 	m_froggerBtn->drawButton(m_gameWindow);
@@ -558,11 +611,13 @@ void GameSource::runMenu()
 
 void GameSource::runRetryMenu()
 {
+	//clear buffers and screen
 	system("cls");
 
 	m_frontBuffer->clearBuffer();
 	m_backBuffer->clearBuffer();
 
+	//draw buttons
 	m_windowBorder->drawButton(m_gameWindow);
 	m_quitBtn->drawButton(m_gameWindow);
 	m_menuBtn->setPosition(m_windowSize.x / 2, 17);
@@ -622,14 +677,18 @@ void GameSource::runRetryMenu()
 
 void GameSource::runControlsMenu()
 {
+	//clear buffers and screen
 	system("cls");
 
 	m_frontBuffer->clearBuffer();
 	m_backBuffer->clearBuffer();
 
+	//draw buttons
 	m_windowBorder->drawButton(m_gameWindow);
 	m_menuBtn->setPosition(m_windowSize.x / 2, 27);
 	m_menuBtn->drawButton(m_gameWindow);
+
+	//write controls to screen
 	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x / 2 - 1, 3), "CONTROLS", ColourCodes[White]);
 	m_gameWindow.drawWordToScreen(Vector2(10, 5), "SPACE INVADERS", ColourCodes[White]);
 	m_gameWindow.drawWordToScreen(Vector2(10, 7), "Move Left - A or <", ColourCodes[White]);
@@ -716,6 +775,7 @@ VOID GameSource::ErrorExit(LPCSTR lpszMessage, HANDLE& out, DWORD& oldConsole)
 }
 
 
+//main loop for both games
 void GameSource::gameLoop()
 {
 	processInput();
@@ -731,6 +791,8 @@ void GameSource::quitGame()
 	system("cls");
 }
 
+
+//gets the time now and compares to the previous time to give delta time in seconds
 void GameSource::calculateDeltaTime()
 {
 	auto currentTime = std::chrono::steady_clock::now();

@@ -2,6 +2,7 @@
 
 AlienManager::AlienManager()
 {
+	//reserve memory vectors
 	m_aliens.reserve(NUMBER_OF_ALIENS);
 	m_missiles.reserve(NUMBER_OF_MISSILES);
 	srand(unsigned int(time(0)));
@@ -43,6 +44,7 @@ void AlienManager::update(float deltaTime, Player& player, std::vector<Barrier>&
 	m_currentAlienMoveDelta += deltaTime;
 	m_currentAlienShootDelta += deltaTime;
 
+	//random cahnce to spawn special alien if its already in then move it
 	if(!m_specialAlien.isActive())
 	{
 		if (rand() % 1000 < 5)
@@ -50,7 +52,12 @@ void AlienManager::update(float deltaTime, Player& player, std::vector<Barrier>&
 			m_specialAlien.spawn(Vector2(0, 0));
 		}
 	}
+	else
+	{
+		m_specialAlien.update(deltaTime);
+	}
 
+	//move aliens all at once and handle switching direction
 	if (m_currentAlienMoveDelta >= m_currentAlienMoveDelay)
 	{
 		for (int i = 0; i < m_aliens.size(); i++)
@@ -74,6 +81,7 @@ void AlienManager::update(float deltaTime, Player& player, std::vector<Barrier>&
 		m_currentAlienMoveDelta = 0;
 	}
 
+	//handle moving alien missiles and detection with player and barriers
 	for (int i = 0; i < m_missiles.size(); i++)
 	{
 		m_missiles[i].update(deltaTime);
@@ -100,12 +108,6 @@ void AlienManager::update(float deltaTime, Player& player, std::vector<Barrier>&
 		}
 	}
 
-
-	if (m_specialAlien.isActive())
-	{
-		m_specialAlien.update(deltaTime);
-	}
-
 }
 
 void AlienManager::updateBuffer(ScreenBuffer& buffer)
@@ -130,11 +132,13 @@ void AlienManager::updateBuffer(ScreenBuffer& buffer)
 	
 }
 
+//slowly makes the aliens speed up
 void AlienManager::reduceDelay()
 {
 	m_currentAlienMoveDelay -= 0.02f;
 }
 
+//returns the lowest y alien on the screen (which is actually the highest y)
 int AlienManager::getLowestAlienY()
 {
 	int lowestY = 0;

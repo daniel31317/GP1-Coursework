@@ -4,6 +4,7 @@ Alien::Alien(Vector2 pos, char body, WORD colour, int score) : GameObject(pos, b
 
 }
 
+//move aliens
 bool Alien::moveAlien(Vector2 gameSize)
 {
 	if (m_movingRight)
@@ -31,6 +32,7 @@ bool Alien::moveAlien(Vector2 gameSize)
 	return false;
 }
 
+//change direction
 void Alien::switchDirection()
 {
 	m_movingRight = !m_movingRight;
