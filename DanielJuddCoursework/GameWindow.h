@@ -11,6 +11,8 @@ private:
 	HANDLE hStdOut;
 
 public:
+	GameWindow() = default;
+
 	//setters
 	void setWindow(Vector2 size);
 	void setCursorPosition(const int x, const int y);

@@ -98,10 +98,10 @@ struct ScreenBuffer
 			m_buffer.clear();
             m_buffer.reserve(cols);
             for (int i = 0; i < cols; ++i) {
-                m_buffer[i].emplace_back(std::vector<BufferCell>(rows));
+                m_buffer.emplace_back(std::vector<BufferCell>(rows));
                 for (int j = 0; j < rows; j++)
                 {
-                    m_buffer[i][j].character = ' ';
+                    m_buffer[i][j] = BufferCell();
                 }
             }
         }

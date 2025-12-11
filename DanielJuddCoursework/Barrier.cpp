@@ -1,14 +1,6 @@
 #include "Barrier.h"
 #include "Player.h"
 
-Barrier::Barrier() : GameObject()
-{
-	
-}
-Barrier::Barrier(int xPos, int yPos, char body, WORD colour) : GameObject(xPos, yPos, body, colour)
-{
-
-}
 Barrier::Barrier(int xPos, int yPos, char body, WORD colour, bool isMovingright, bool isHarmful, float maxDelay) : GameObject(xPos, yPos, body, colour)
 , m_movingRight(isMovingright), m_isHarmful(isHarmful), m_moveDelay(maxDelay)
 {
