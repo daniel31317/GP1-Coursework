@@ -5,6 +5,7 @@
 #include "Colour.h"
 #include "GameObject.h"
 
+//buffer cell is the char and colour for a specific position on the screen
 struct BufferCell
 {
     char character = ' ';
@@ -24,6 +25,7 @@ struct ScreenBuffer
         int col;
         std::vector<std::vector<BufferCell>> m_buffer;
 
+        //check if its a valid position
         inline bool inBounds(const int& x, const int& y) const
         {
             return (x >= 0 && x < row && y >= 0 && y < col);
@@ -90,12 +92,13 @@ struct ScreenBuffer
             }    
         }
 
+        //creates a buffer with the amount of cols and rows
         void createBuffer(const int& cols, const int& rows)
         {
 			m_buffer.clear();
-            m_buffer.resize(cols);
+            m_buffer.reserve(cols);
             for (int i = 0; i < cols; ++i) {
-                m_buffer[i] = std::vector<BufferCell>(rows);
+                m_buffer[i].emplace_back(std::vector<BufferCell>(rows));
                 for (int j = 0; j < rows; j++)
                 {
                     m_buffer[i][j].character = ' ';
@@ -103,9 +106,9 @@ struct ScreenBuffer
             }
         }
 
+        //clears the buffer to ' '
         void clearBuffer()
         {
-
 			BufferCell emptyCell;
 
             for (int i = 0; i < row; i++)

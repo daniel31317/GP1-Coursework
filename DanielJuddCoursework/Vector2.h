@@ -14,6 +14,7 @@ struct Vector2
 		this->y = y;
 	}
 
+	//operator overloads
 	bool operator== (const Vector2& other) const
 	{
 		if (x == other.x && y == other.y)

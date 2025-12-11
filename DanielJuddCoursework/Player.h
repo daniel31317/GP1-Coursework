@@ -19,12 +19,16 @@ class Player : public GameObject
 		
 	public:
 		using GameObject::GameObject;
+
+		//constructors
 		Player();
 		Player(int xPos, int yPos, char body, WORD colour, bool isGameSpaceInvaders);
 
+		//game loop
 		void processInput(float deltaTime);
 		virtual void update(float deltaTime) override;
 
+		//logic
 		void loseLife() { m_lives--; }
 		int getPlayerLives() const { return m_lives; }
 		void setPlayerLives(int health) { m_lives = health; }

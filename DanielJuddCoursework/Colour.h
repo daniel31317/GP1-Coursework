@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 
-// Enum must align exactly with the indices used in ColourCodes array.
+//stores the enum values for the colours that coinscide with the index of ColourCodes[]
 enum Colour
 {
 	Black = 0,

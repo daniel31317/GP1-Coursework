@@ -12,15 +12,20 @@ class GameObject
 		WORD m_colour = ColourCodes[White];
 
 	public:
+		//constructors
 		GameObject();
 		GameObject(int xPos, int yPos, char body, WORD colour);
 		GameObject(Vector2 position, char body, WORD colour);
 
+		//game loop
 		void draw() const;
 		virtual void update(float deltaTime);
+
+		//movement
 		void move(int x, int y);
 		void move(Vector2 move);
 
+		//getters/setters
 		void setPosition(int x, int y) { m_position.x = x; m_position.y = y; }
 		void setPosition(Vector2 position) { this->m_position = position; }
 		Vector2 getPosition() const { return m_position; };

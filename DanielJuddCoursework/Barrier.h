@@ -18,14 +18,19 @@ private :
 	Player* m_playerRef = nullptr;
 
 public:
-
-	Barrier();
-	Barrier(int xPos, int yPos, char body, WORD colour);
+	//constructors
+	using GameObject::GameObject;
+	Barrier() = default;
 	Barrier(int xPos, int yPos, char body, WORD colour, bool isMovingright, bool isHarmful, float maxMoveDelay);
 	Barrier(Vector2 pos, char body, WORD colour, bool isMovingright, bool isHarmful, float maxMoveDelay);
+
 	void damageBarrier();
+
+	//getters
 	int getBarrierHealth() const { return m_barrierHealth; }
 	bool isActive() const { return m_barrierHealth == 0; }
+
+	//game loop
 	virtual void update(float deltaTime) override;
 	void playerCollision(Player& player);
 };

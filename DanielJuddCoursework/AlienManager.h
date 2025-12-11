@@ -11,6 +11,9 @@
 class AlienManager
 {
 private:
+
+	//makes the game source file more readable if aliens are handled in here
+
 	Vector2 m_gameSize;
 
 	std::vector<Alien> m_aliens;
@@ -33,11 +36,16 @@ private:
 
 
 public:
+	//constructor
 	AlienManager();
-	void setGameSize(const Vector2 gameSize) { m_gameSize = gameSize; }
 	void initialiseAliens();
+
+	//game loop
 	void update(float deltaTime, Player& player, std::vector<Barrier>& barriers);
 	void updateBuffer(ScreenBuffer& buffer);
+
+	//getters/setters
+	void setGameSize(const Vector2 gameSize) { m_gameSize = gameSize; }
 	std::vector<Alien>* getAliens() { return &m_aliens; }
 	SpecialAlien* getSpecialAlien() { return &m_specialAlien; }
 	void reduceDelay();
