@@ -25,9 +25,11 @@ private:
 	const Vector2 m_windowSize = Vector2(85, 35);
 	const Vector2 m_gameSize = Vector2(79, 29);
 	const int m_gameDrawOffset = 3;
+
 	const Vector2 m_scoreDrawPosition = Vector2(10, 33);
 	const Vector2 m_livesDrawPosition = Vector2(64, 33);
 	const Vector2 m_timerDrawPosition = Vector2(56, 1);
+
 	const float m_froggerTimeLimit = 60.0f;
 	float m_currentFroggerTime = m_froggerTimeLimit;
 
@@ -71,6 +73,7 @@ private:
 	std::unique_ptr<Button> m_quitBtn;
 	std::unique_ptr<Button> m_menuBtn;
 	std::unique_ptr<Button> m_retryBtn;
+	std::unique_ptr<Button> m_controlsBtn;
 
 	std::unique_ptr<Button> m_windowBorder;
 	std::unique_ptr<Button> m_GameBorder;
@@ -120,6 +123,8 @@ public:
 	void runMenu();
 
 	void runRetryMenu();
+
+	void runControlsMenu();
 
 	void quitGame();
 

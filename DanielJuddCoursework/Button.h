@@ -27,6 +27,7 @@ public:
 	Button(int width, int height, Vector2 position, std::string name, WORD borderColour, WORD nameColour);
 	void drawButton(GameWindow& window);
 	bool buttonInput(const int x, const int y) const;
+	void setPosition(const int x, const int y) { m_position = Vector2(x, y); m_drawPosition = Vector2(x - m_width / 2, y - m_height / 2);}
 
 	
 };

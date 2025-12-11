@@ -8,12 +8,13 @@ GameSource::GameSource()
 	m_frontBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
 	m_backBuffer = std::make_unique<ScreenBuffer>(m_gameSize);
 
-	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "SpaceInvaders", ColourCodes[Green], ColourCodes[Green]);
-	m_froggerBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Frogger", ColourCodes[Pink], ColourCodes[Pink]);
-	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 21), "Quit", ColourCodes[Red], ColourCodes[Red]);
+	m_spaceInvadersBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 6), "SpaceInvaders", ColourCodes[Green], ColourCodes[Green]);
+	m_froggerBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 13), "Frogger", ColourCodes[Pink], ColourCodes[Pink]);
+	m_controlsBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 20), "Controls", ColourCodes[Blue], ColourCodes[Blue]);
+	m_quitBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 27), "Quit", ColourCodes[Red], ColourCodes[Red]);
 	m_menuBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 14), "Menu", ColourCodes[Blue], ColourCodes[Blue]);
 	m_retryBtn = std::make_unique<Button>(19, 5, Vector2(m_windowSize.x / 2, 7), "Retry", ColourCodes[Green], ColourCodes[Green]);
-
+	
 
 	m_windowBorder = std::make_unique<Button>(m_windowSize.x, m_windowSize.y, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "", ColourCodes[White], ColourCodes[White]);
 	m_GameBorder = std::make_unique<Button>(m_gameSize.x + 2, m_gameSize.y + 2, Vector2(m_windowSize.x / 2, m_windowSize.y / 2), "", ColourCodes[White], ColourCodes[White]);
@@ -494,7 +495,9 @@ void GameSource::runMenu()
 	m_windowBorder->drawButton(m_gameWindow);
 	m_spaceInvadersBtn->drawButton(m_gameWindow);
 	m_froggerBtn->drawButton(m_gameWindow);
+	m_controlsBtn->drawButton(m_gameWindow);
 	m_quitBtn->drawButton(m_gameWindow);
+
 	
 
 	//from https://stackoverflow.com/questions/73958407/c-get-users-cursor-position-in-console-cells 
@@ -534,6 +537,11 @@ void GameSource::runMenu()
 					drawGameUI();
 					madeChoice = true;
 				}
+				else if (m_controlsBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				{
+					m_currentState = &GameSource::runControlsMenu;
+					madeChoice = true;
+				}
 				else if (m_quitBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
 				{
 					m_currentState = &GameSource::quitGame;
@@ -557,6 +565,7 @@ void GameSource::runRetryMenu()
 
 	m_windowBorder->drawButton(m_gameWindow);
 	m_quitBtn->drawButton(m_gameWindow);
+	m_menuBtn->setPosition(m_windowSize.x / 2, 17);
 	m_menuBtn->drawButton(m_gameWindow);
 	m_retryBtn->drawButton(m_gameWindow);
 	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x / 2 - 1, 3), "GAME OVER", ColourCodes[DarkRed]);
@@ -600,6 +609,70 @@ void GameSource::runRetryMenu()
 				else if (m_quitBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
 				{
 					m_currentState = &GameSource::quitGame;
+					madeChoice = true;
+				}
+			}
+			fflush(stdout);
+		}
+	}
+
+	//set console to what it was previously
+	SetConsoleMode(out, oldConsole);
+}
+
+void GameSource::runControlsMenu()
+{
+	system("cls");
+
+	m_frontBuffer->clearBuffer();
+	m_backBuffer->clearBuffer();
+
+	m_windowBorder->drawButton(m_gameWindow);
+	m_menuBtn->setPosition(m_windowSize.x / 2, 27);
+	m_menuBtn->drawButton(m_gameWindow);
+	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x / 2 - 1, 3), "CONTROLS", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(10, 5), "SPACE INVADERS", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(10, 7), "Move Left - A or <", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(10, 9), "Move Right - D or >", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(10, 11), "Fire Laser - SPACE", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(10, 13), "Reset - R", ColourCodes[White]);
+
+
+	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x - 22, 5), "FROGGER", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x - 22, 7), "Move Left - A or <", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x - 22, 9), "Move Right - D or >", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x - 22, 11), "Move Up - W or ^", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x - 22, 13), "Move Down - S or v", ColourCodes[White]);
+	m_gameWindow.drawWordToScreen(Vector2(m_gameSize.x - 22, 15), "Reset - R", ColourCodes[White]);
+
+	//from https://stackoverflow.com/questions/73958407/c-get-users-cursor-position-in-console-cells 
+	//and https://learn.microsoft.com/en-us/windows/console/reading-input-buffer-events
+	//with some additional settings and modifications to get it working with what i needed it to do
+
+	HANDLE out = GetStdHandle(STD_INPUT_HANDLE);
+	INPUT_RECORD ir;
+	DWORD dwRead;
+	DWORD oldConsole;
+
+	bool madeChoice = false;
+
+	HandleSettingUpConsoleForMenu(out, oldConsole);
+
+	while (ReadConsoleInput(out, &ir, 1, &dwRead) && dwRead == 1 && !madeChoice)
+	{
+		//if it is a mouse event
+		if (ir.EventType == MOUSE_EVENT)
+		{
+			//ignore all mouse events which don't involve mouse button presses
+			if (ir.Event.MouseEvent.dwEventFlags != 0 && ir.Event.MouseEvent.dwEventFlags != DOUBLE_CLICK)
+				continue;
+
+			//if mouse was released
+			if (ir.Event.MouseEvent.dwButtonState == 0)
+			{
+				if (m_menuBtn->buttonInput(ir.Event.MouseEvent.dwMousePosition.X, ir.Event.MouseEvent.dwMousePosition.Y))
+				{
+					m_currentState = &GameSource::runMenu;
 					madeChoice = true;
 				}
 			}
